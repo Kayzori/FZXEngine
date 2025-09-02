@@ -3,14 +3,19 @@
 #include <iostream>
 #include <vector>
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <chrono>
 
 #include <Engine/Renderer/2D/Renderer2D.hpp>
-#include <Engine/Components/Transform2D.hpp>
+#include <Engine/Component/Component.h>
+#include <Engine/Object/Object.h>
+#include <Engine/Servers/PhysicsServer/PhysicsServer.hpp>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
+
+glm::vec2 direction = {0.0f, 0.0f};
+float rotation = 0.0f;
+float speed = 100.0;
 
 int main() {
     if (!glfwInit()) {
@@ -49,17 +54,16 @@ int main() {
     const float FrameTime = 1.0f / FPS;
     
     // Init --------------
-    Renderer2D renderer(screenWidth, screenHeight);
+    PhysicsServer::Init({0, 0}, {screenWidth/2, screenHeight/2});
+    Renderer2D::Init(screenWidth, screenHeight);
+    Collision2D* col = new Collision2D(new Rect2D(100.0f, 100.0f));
+    Collision2D* col2 = new Collision2D(new Circle2D(100.0f, 32), glm::vec4(1, 0, 0, 1));
+    Collision2D* col3 = new Collision2D(new Circle2D(25.0f, 5), glm::vec4(0, 0, 1, 1));
+    col->transform->offset = {300.0, 300.0};
+    col2->transform->offset = {249.0, 300.0};
+    col3->transform->offset = {600.0, 450.0};
+    
 
-    std::vector<glm::vec2> square = {
-        {-10.0f, 10.0f },
-        {10.0f, 10.0f},
-        {10.0f, -10.0f},
-        {-10.0f, -10.0f}
-    };
-
-    Transform2D squareTransform;
-    squareTransform.position = {screenWidth/4.0f, screenHeight/2.0f};
     float deltaTime = 0.0f;
     static bool scalingUp = true;
     // --------------------------
@@ -74,27 +78,15 @@ int main() {
             // Updating --------
             processInput(window);
 
-            if (scalingUp) {
-                squareTransform.scale += 5.0f * deltaTime;
-                squareTransform.position.x += 150.0f * deltaTime;
-                squareTransform.rotation += 50.0f *deltaTime;
-                if (squareTransform.scale.x >= 10.0f)
-                    scalingUp = false;
-            } else {
-                squareTransform.scale -= 5.0f * deltaTime;
-                squareTransform.position.x -= 150.0f * deltaTime;
-                squareTransform.rotation -= 50.0f *deltaTime;
-                if (squareTransform.scale.x <= 1.0f)
-                    scalingUp = true;
-            }
-
             glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
-
-            std::vector<glm::vec2> transformedSquare = square;
-            squareTransform.Apply(transformedSquare);
-            renderer.DrawShape(transformedSquare);
-            renderer.Render();
+            col->transform->position += direction * speed * deltaTime;
+            col->transform->rotation += rotation * deltaTime;
+            std::cout << "While Is Colliding: " << (col->isColliding() ? "true" : "false") << std::endl;
+            col->OnDraw();
+            col2->OnDraw();
+            col3-> OnDraw();
+            Renderer2D::Render();
 
             glfwSwapBuffers(window);
             glfwPollEvents();
@@ -114,4 +106,16 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 void processInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+        direction = {0, -1};
+    else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+        direction = {0, 1};
+    else if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+        direction = {-1, 0};
+    else if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+        direction = {1, 0};
+    else direction = {0, 0};
+    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
+        rotation = 50.0f;
+    else rotation = 0.0f;
 }

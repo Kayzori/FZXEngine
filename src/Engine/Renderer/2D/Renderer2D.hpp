@@ -1,43 +1,53 @@
 #pragma once
 #include <glad/glad.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <vector>
-
 #include <Engine/Renderer/GLShaderManager.hpp>
 #include <Engine/Renderer/2D/Triangulator2D.hpp>
 
+struct Vertex2D {
+    glm::vec2 position;
+    glm::vec4 color;
+};
+
 class Renderer2D {
 public:
-    Renderer2D(int width, int height);
-    ~Renderer2D();
+    static void Init(int width, int height);
+    static void Delete();
+    static bool isInit();
 
-    void DrawShape(const std::vector<glm::vec2>& vertices);
-    void Render();
+    static void DrawPolygon(const std::vector<glm::vec2> vertices, const glm::vec4 color = glm::vec4(1,1,1,1));
+    static void Render();
 
 private:
-    int screenWidth, screenHeight;
-    GLuint VAO, VBO;
-    GLuint shaderProgram;
-    glm::mat4 projection;
-    std::vector<glm::vec2> vertexBatch;
+    // Flags
+    inline static bool Initialized = false;
+    // ScreenSize
+    inline static int SCREEN_WIDTH;
+    inline static int SCREEN_HEIGHT;
 
-    static const size_t MAX_VERTICES = 10000;
+    inline static GLuint VAO, VBO;
+    inline static GLuint shaderProgram;
+    inline static glm::mat4 projection;
+    inline static std::vector<Vertex2D> vertexBatch;
+    inline static const size_t MAX_VERTICES = 10000;
 
-    const char* vertexShaderSrc = R"(
+    inline static const char* vertexShaderSrc = R"(
         #version 330 core
         layout(location = 0) in vec2 aPos;
+        layout(location = 1) in vec4 aColor;
+        out vec4 vColor;
         uniform mat4 uProjection;
         void main() {
             gl_Position = uProjection * vec4(aPos, 0.0, 1.0);
+            vColor = aColor;
         }
     )";
 
-    const char* fragmentShaderSrc = R"(
+    inline static const char* fragmentShaderSrc = R"(
         #version 330 core
+        in vec4 vColor;
         out vec4 FragColor;
         void main() {
-            FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+            FragColor = vColor;
         }
     )";
 };

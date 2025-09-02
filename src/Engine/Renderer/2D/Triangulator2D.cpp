@@ -1,16 +1,8 @@
-#include <algorithm>
-#include <cmath>
-#include <iostream>
-
 #include <Engine/Renderer/2D/Triangulator2D.hpp>
 
 // Internal utility functions
 static float Cross(const glm::vec2& a, const glm::vec2& b) {
     return a.x * b.y - a.y * b.x;
-}
-
-static glm::vec2 Sub(const glm::vec2& a, const glm::vec2& b) {
-    return {a.x - b.x, a.y - b.y};
 }
 
 // --- Private Helpers ---
@@ -30,21 +22,21 @@ std::vector<glm::vec2> Triangulator2D::RemoveCollinear(const std::vector<glm::ve
         const glm::vec2& prev = pts[(i + n - 1) % n];
         const glm::vec2& cur = pts[i];
         const glm::vec2& next = pts[(i + 1) % n];
-        glm::vec2 v1 = Sub(cur, prev);
-        glm::vec2 v2 = Sub(next, cur);
+        glm::vec2 v1 = cur - prev;
+        glm::vec2 v2 = next - cur;
         if (std::fabs(Cross(v1, v2)) > 1e-9f) out.push_back(cur);
     }
     return out;
 }
 
 bool Triangulator2D::IsConvex(const glm::vec2& prev, const glm::vec2& cur, const glm::vec2& next) {
-    return Cross(Sub(cur, prev), Sub(next, cur)) > 0.0f; // CCW assumed
+    return Cross(cur - prev, next - cur) > 0.0f; // CCW assumed
 }
 
 bool Triangulator2D::PointInTriangle(const glm::vec2& p, const glm::vec2& a, const glm::vec2& b, const glm::vec2& c) {
-    float c1 = Cross(Sub(b, a), Sub(p, a));
-    float c2 = Cross(Sub(c, b), Sub(p, b));
-    float c3 = Cross(Sub(a, c), Sub(p, c));
+    float c1 = Cross(b - a, p - a);
+    float c2 = Cross(c - b,p - b);
+    float c3 = Cross(a - c,p - c);
     bool has_neg = (c1 < 0) || (c2 < 0) || (c3 < 0);
     bool has_pos = (c1 > 0) || (c2 > 0) || (c3 > 0);
     return !(has_neg && has_pos);
@@ -90,7 +82,7 @@ std::vector<Triangle2D> Triangulator2D::EarClipping(const std::vector<glm::vec2>
             ear_found = true;
             break;
         }
-        if (!ear_found) break; // Invalid polygon
+        if (!ear_found) break;
     }
 
     if (indices.size() == 3) {

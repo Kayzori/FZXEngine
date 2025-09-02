@@ -4,7 +4,6 @@
 
 class GLShaderManager {
 public: 
-
     static std::string LoadShaderSource(const std::string filepath);
 
     static GLuint CompileShader(GLenum shaderType, const std::string source);
