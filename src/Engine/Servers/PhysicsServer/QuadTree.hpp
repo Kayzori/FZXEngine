@@ -1,41 +1,33 @@
 #pragma once
-#include <vector>
-#include <memory>
-#include <glm/glm.hpp>
+#include <Math/Math.hpp>
 #include <Engine/Object/2D/Collision2D.hpp>
 
-// Axis-Aligned Bounding Box (center + half-size)
-struct AABB {
-    glm::vec2 center;
-    glm::vec2 halfSize;
-
-    AABB() : center(0.0f), halfSize(0.0f) {}
-    AABB(const glm::vec2& c, const glm::vec2& hs) : center(c), halfSize(hs) {}
-
-    bool contains(Collision2D* C) const;   // check if polygon fully inside this AABB
-    bool intersects(const AABB& other) const;
-};
-
-class Quadtree {
+class QuadTree {
 public:
-    static const int MAX_OBJECTS = 4;
-    static const int MAX_LEVELS = 5;
+    // Constructor
+    QuadTree(int level, const AABB bounds);
 
-    Quadtree(int level, const AABB& bounds);
+    // CONSTS
+    static const int CAPACITY = 12;
+    static const int DEPTH = 8;
 
+    // Methods
     void clear();
     void insert(Collision2D* obj);
-    void retrieve(std::vector<Collision2D*>& out, Collision2D* obj) const;
-
-    void setBounds(const AABB& newBounds);
-    AABB getBounds();
+    bool remove(Collision2D* obj);
+    void retrieve(std::unordered_set<Collision2D*>& out, Collision2D* obj) const;
+    void setBoard(const AABB newBoard);
+    AABB getBoard();
 
 private:
+    // Properties
     int level;
-    AABB bounds;
-    std::vector<Collision2D*> objects;
-    std::unique_ptr<Quadtree> nodes[4];
+    AABB board;
+    std::unordered_set<Collision2D*> objects;
+    std::unique_ptr<QuadTree> subtrees[4];
 
-    void split();
+    // Methods
+    void tryMerge();
+    void subdivide();
     int getIndex(Collision2D* obj) const;
 };

@@ -1,25 +1,39 @@
 #pragma once
-#define GLM_ENABLE_EXPERIMENTAL
+
 #include <vector>
-#include <glm/glm.hpp>
+#include <Math/Math.hpp>
 #include <Engine/Object/2D/Collision2D.hpp>
-#include <Engine/Servers/PhysicsServer/QuadTree.hpp>
+#include "QuadTree.hpp"
 
-class PhysicsServer {
+// SERVER
+class Physics2DServer {
 public:
-    // Init world Quadtree
-    static void Init(const glm::vec2& worldCenter, const glm::vec2& worldHalfSize);
+    // Consts
+    inline static float Gravity = 980.0f;
+    inline static glm::vec2 GravityDirection = {0, 1};
 
-    // Collision management
-    static void InsertCollision(Collision2D* obj);
-    static void DeleteCollision(Collision2D* obj);
-    static const std::vector<Collision2D*>& GetCollisions();
+    // Systems
+    class CollisionSystem
+    {
+    public:
+        // Init board for QuadTree
+        static void InitCollisionBoard(AABB board);
 
-    // Collision detection
-    static bool Collision2DDetection(Collision2D* obj); // broad + narrow phase
-    static bool SATCollision2DDetection(Collision2D* A, Collision2D* B); // narrow phase
+        // Collision management
+        static void InsertCollision(Collision2D* obj);
+        static void DeleteCollision(Collision2D* obj);
+        static const std::unordered_set<Collision2D*>& GetCollisions();
 
-private:
-    inline static Quadtree tree = Quadtree(0, AABB({0,0},{5000,5000}));
-    inline static std::vector<Collision2D*> Collision2DObjects; // all active collisions
+        // Collision Detection With Neighbors
+        // QuadTree To Get Neighbors
+        // Uses Base Algorithm To Update Infos
+        static void UpdateCollisionInfos(Collision2D* obj);
+
+        // Base Collision Detection Algorithm
+        // AABB + SAT Collision Detection
+        static Collision2DInfos CollisionDetection(Collision2D* A, Collision2D* B);
+    private:
+        inline static QuadTree tree = QuadTree(0, {0.0f, 0.0f, 0.0f, 0.0f});
+        inline static std::unordered_set<Collision2D*> Collision2DObjects;
+    };
 };

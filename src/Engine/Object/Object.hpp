@@ -1,11 +1,17 @@
 #pragma once
+#include <Scripting/Signal.hpp>
 
+// BASE CLASS
 class Object
 {
 public:
-    inline virtual void OnReady() {};
-    inline virtual void OnUpdate(float delta) {};
-    inline virtual void OnDraw() {};
+    // Con/De structor
     Object() = default;
     virtual ~Object() = default;
+
+    // GameLoop
+    virtual void OnReady() {};
+    virtual void OnUpdate(float delta) {};
+    virtual void OnPhysicsUpdate(float delta) {};
+    virtual void OnDraw() {};
 };

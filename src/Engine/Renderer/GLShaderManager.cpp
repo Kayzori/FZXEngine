@@ -1,4 +1,4 @@
-#include <Engine/Renderer/GLShaderManager.hpp>
+#include "GLShaderManager.hpp"
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -23,9 +23,6 @@ GLuint GLShaderManager::CompileShader(GLenum shaderType, const std::string sourc
 
     if (!CheckShaderCompileStatus(shader)) {
         std::cerr << "[Error] Shader compilation failed for type: " << shaderType << std::endl;
-    } else {
-        std::cout << "[Success] Shader compilation succeeded for type: " << shaderType
-        << "\n" + source << std::endl;
     }
     return shader;
 }

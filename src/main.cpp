@@ -5,19 +5,51 @@
 #include <glm/glm.hpp>
 #include <chrono>
 
-#include <Engine/Renderer/2D/Renderer2D.hpp>
-#include <Engine/Component/Component.h>
-#include <Engine/Object/Object.h>
-#include <Engine/Servers/PhysicsServer/PhysicsServer.hpp>
+#include "Engine/Renderer/2D/Renderer2D.hpp"
+#include "Engine/Component/Components.h"
+#include "Engine/Object/Object.h"
+#include "Engine/Servers/PhysicsServer/PhysicsServer.hpp"
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow* window);
-
+// ---------------- Global Variables ----------------
 glm::vec2 direction = {0.0f, 0.0f};
 float rotation = 0.0f;
-float speed = 100.0;
+float speed = 100.0f;
 
+bool windowMoving = false;
+std::chrono::high_resolution_clock::time_point lastMoveTime;
+
+// ---------------- GLFW Callbacks ----------------
+void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+    glViewport(0, 0, width, height);
+}
+
+void window_position_callback(GLFWwindow* window, int xpos, int ypos) {
+    windowMoving = true;
+    lastMoveTime = std::chrono::high_resolution_clock::now();
+}
+
+// ---------------- Input ----------------
+void processInput(GLFWwindow* window) {
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+        direction = {0, -1};
+    else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+        direction = {0, 1};
+    else if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+        direction = {-1, 0};
+    else if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+        direction = {1, 0};
+    else
+        direction = {0, 0};
+
+    rotation = (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) ? 50.0f : 0.0f;
+}
+
+// ---------------- Main ----------------
 int main() {
+    // Initialize GLFW
     if (!glfwInit()) {
         std::cerr << "Failed to initialize GLFW\n";
         return -1;
@@ -42,80 +74,110 @@ int main() {
         return -1;
     }
 
-    glViewport(0, 0, screenWidth, screenHeight);
+    // Setup callbacks
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetWindowPosCallback(window, window_position_callback);
 
+    glViewport(0, 0, screenWidth, screenHeight);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    // Initialize timing
     auto lastTime = std::chrono::high_resolution_clock::now();
-    
+    lastMoveTime = lastTime;
     const float FPS = 60.0f;
     const float FrameTime = 1.0f / FPS;
-    
-    // Init --------------
-    PhysicsServer::Init({0, 0}, {screenWidth/2, screenHeight/2});
-    Renderer2D::Init(screenWidth, screenHeight);
-    Collision2D* col = new Collision2D(new Rect2D(100.0f, 100.0f));
-    Collision2D* col2 = new Collision2D(new Circle2D(100.0f, 32), glm::vec4(1, 0, 0, 1));
-    Collision2D* col3 = new Collision2D(new Circle2D(25.0f, 5), glm::vec4(0, 0, 1, 1));
-    col->transform->offset = {300.0, 300.0};
-    col2->transform->offset = {249.0, 300.0};
-    col3->transform->offset = {600.0, 450.0};
-    
-
     float deltaTime = 0.0f;
-    static bool scalingUp = true;
-    // --------------------------
 
+    // ---------------- Init Scene ----------------
+    Physics2DServer::CollisionSystem::InitCollisionBoard({{0, 0}, {screenWidth / 2, screenHeight / 2}});
+    Renderer2D::Init(screenWidth, screenHeight);
+
+    RigidBody2D* rb = new RigidBody2D(
+        new Collision2D(new Circle2D(25.0f, 16), {1, 0, 0, 1}),
+        1.0f,
+        false
+    );
+    rb->transform->position = {300, 0};
+
+    RigidBody2D* rb3 = new RigidBody2D(
+        new Collision2D(new Circle2D(25.0f, 16), {1, 0, 0, 1}),
+        1.0f,
+        false
+    );
+    rb3->transform->position = {350, -200};
+
+    RigidBody2D* rb5 = new RigidBody2D(
+        new Collision2D(new Circle2D(25.0f, 16), {1, 0, 0, 1}),
+        1.0f,
+        false
+    );
+    rb5->transform->position = {400, -400};
+
+    RigidBody2D* rb7 = new RigidBody2D(
+        new Collision2D(new Circle2D(25.0f, 16), {1, 0, 0, 1}),
+        1.0f,
+        false
+    );
+    rb7->transform->position = {450, -600};
+
+    RigidBody2D* rb9 = new RigidBody2D(
+        new Collision2D(new Circle2D(25.0f, 16), {1, 0, 0, 1}),
+        1.0f,
+        false
+    );
+    rb9->transform->position = {475, -800};
+
+    StaticBody2D* sb = new StaticBody2D(new Collision2D(new Box2D(800, 50), {1, 1, 0, 1}));
+    sb->transform->position = {400, 450};
+
+
+    // ---------------- Main Loop ----------------
     while (!glfwWindowShouldClose(window)) {
         auto currentTime = std::chrono::high_resolution_clock::now();
         std::chrono::duration<float> elapsed = currentTime - lastTime;
         lastTime = currentTime;
-        deltaTime += elapsed.count();
 
+        auto sinceMove = std::chrono::duration<float>(currentTime - lastMoveTime).count();
+        if (windowMoving && sinceMove > 0.05f)
+            windowMoving = false;
+
+        if (windowMoving) {
+            glfwPollEvents();
+            continue;
+        }
+
+        deltaTime += elapsed.count();
+        
         while (deltaTime >= FrameTime) {
-            // Updating --------
+            
             processInput(window);
 
             glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
-            col->transform->position += direction * speed * deltaTime;
-            col->transform->rotation += rotation * deltaTime;
-            std::cout << "While Is Colliding: " << (col->isColliding() ? "true" : "false") << std::endl;
-            col->OnDraw();
-            col2->OnDraw();
-            col3-> OnDraw();
+            
+            rb->OnUpdate(FrameTime);
+            rb3->OnUpdate(FrameTime);
+            rb5->OnUpdate(FrameTime);
+            rb7->OnUpdate(FrameTime);
+            rb9->OnUpdate(FrameTime);
+            rb->OnDraw();
+            rb3->OnDraw();
+            rb5->OnDraw();
+            rb7->OnDraw();
+            rb9->OnDraw();
+            sb->OnDraw();
+
             Renderer2D::Render();
 
             glfwSwapBuffers(window);
             glfwPollEvents();
-            // ------------------
+
             deltaTime -= FrameTime;
         }
     }
 
+    glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
-}
-
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-    glViewport(0, 0, width, height);
-}
-
-void processInput(GLFWwindow* window) {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-        direction = {0, -1};
-    else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-        direction = {0, 1};
-    else if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-        direction = {-1, 0};
-    else if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-        direction = {1, 0};
-    else direction = {0, 0};
-    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
-        rotation = 50.0f;
-    else rotation = 0.0f;
 }

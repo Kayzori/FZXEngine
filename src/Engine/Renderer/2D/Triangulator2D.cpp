@@ -1,4 +1,4 @@
-#include <Engine/Renderer/2D/Triangulator2D.hpp>
+#include "Triangulator2D.hpp"
 
 // Internal utility functions
 static float Cross(const glm::vec2& a, const glm::vec2& b) {

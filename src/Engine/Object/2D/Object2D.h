@@ -1,4 +1,4 @@
 #pragma once
-#include <Engine/Object/2D/Object2D.hpp>
-#include <Engine/Object/2D/StaticBody2D.hpp>
-#include <Engine/Object/2D/Collision2D.hpp>
+#include "Object2D.hpp"
+#include "Collision2D.hpp"
+#include "PhysicsBody2D/PhysicsBody2D.h"
