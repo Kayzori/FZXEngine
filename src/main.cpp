@@ -11,9 +11,6 @@
 #include "Engine/Servers/PhysicsServer/PhysicsServer.hpp"
 
 // ---------------- Global Variables ----------------
-glm::vec2 direction = {0.0f, 0.0f};
-float rotation = 0.0f;
-float speed = 100.0f;
 
 bool windowMoving = false;
 std::chrono::high_resolution_clock::time_point lastMoveTime;
@@ -32,19 +29,6 @@ void window_position_callback(GLFWwindow* window, int xpos, int ypos) {
 void processInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-        direction = {0, -1};
-    else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-        direction = {0, 1};
-    else if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-        direction = {-1, 0};
-    else if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-        direction = {1, 0};
-    else
-        direction = {0, 0};
-
-    rotation = (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) ? 50.0f : 0.0f;
 }
 
 // ---------------- Main ----------------
@@ -85,7 +69,7 @@ int main() {
     // Initialize timing
     auto lastTime = std::chrono::high_resolution_clock::now();
     lastMoveTime = lastTime;
-    const float FPS = 60.0f;
+    const float FPS = 120.0f;
     const float FrameTime = 1.0f / FPS;
     float deltaTime = 0.0f;
 
@@ -94,43 +78,42 @@ int main() {
     Renderer2D::Init(screenWidth, screenHeight);
 
     RigidBody2D* rb = new RigidBody2D(
-        new Collision2D(new Circle2D(25.0f, 16), {1, 0, 0, 1}),
-        1.0f,
-        false
+        new Collision2D(new Box2D(50.0f), {0, 1, 0, 1}),
+        1.0f,   // Mass
+        1.0f,   // Restitution
+        0.0f    // Friction
     );
-    rb->transform->position = {300, 0};
+    rb->ApplyForce(glm::vec2(10000.0f * 10.0f, -10000.0f));
+    rb->transform->position = {200, 100};
 
-    RigidBody2D* rb3 = new RigidBody2D(
-        new Collision2D(new Circle2D(25.0f, 16), {1, 0, 0, 1}),
-        1.0f,
-        false
+    RigidBody2D* rb2 = new RigidBody2D(
+        new Collision2D(new Circle2D(50.0f, 16), {0, 1, 0, 1}),
+        1.0f,   // Mass
+        1.0f,   // Restitution
+        0.0f    // Friction
     );
-    rb3->transform->position = {350, -200};
+    rb2->ApplyForce(glm::vec2(-10000.0f * 10.0f, -10000.0f));
+    rb2->transform->position = {600, 100};
 
-    RigidBody2D* rb5 = new RigidBody2D(
-        new Collision2D(new Circle2D(25.0f, 16), {1, 0, 0, 1}),
-        1.0f,
-        false
+    RigidBody2D* rb4 = new RigidBody2D(
+        new Collision2D(new Circle2D(20.0f, 16), {0, 1, 0, 1}),
+        1.0f,   // Mass
+        1.0f,   // Restitution
+        0.0f    // Friction
     );
-    rb5->transform->position = {400, -400};
+    rb4->transform->position = {100, 100};
 
-    RigidBody2D* rb7 = new RigidBody2D(
-        new Collision2D(new Circle2D(25.0f, 16), {1, 0, 0, 1}),
-        1.0f,
-        false
-    );
-    rb7->transform->position = {450, -600};
+    StaticBody2D* sb = new StaticBody2D(new Collision2D(new Box2D(800, 50), {1, 1, 1, 1}, glm::vec4(0.0f)));
+    sb->transform->position = {400, 625};
+    
+    StaticBody2D* sb2 = new StaticBody2D(new Collision2D(new Box2D(50, 600), {1, 1, 1, 1}, glm::vec4(0.0f)));
+    sb2->transform->position = {-25, 300};
+    
+    StaticBody2D* sb3 = new StaticBody2D(new Collision2D(new Box2D(50, 600), {1, 1, 1, 1}, glm::vec4(0.0f)));
+    sb3->transform->position = {825, 300};
 
-    RigidBody2D* rb9 = new RigidBody2D(
-        new Collision2D(new Circle2D(25.0f, 16), {1, 0, 0, 1}),
-        1.0f,
-        false
-    );
-    rb9->transform->position = {475, -800};
-
-    StaticBody2D* sb = new StaticBody2D(new Collision2D(new Box2D(800, 50), {1, 1, 0, 1}));
-    sb->transform->position = {400, 450};
-
+    StaticBody2D* sb4 = new StaticBody2D(new Collision2D(new Box2D(800, 50), {1, 1, 1, 1}, glm::vec4(0.0f)));
+    sb4->transform->position = {400, -25};
 
     // ---------------- Main Loop ----------------
     while (!glfwWindowShouldClose(window)) {
@@ -153,20 +136,22 @@ int main() {
             
             processInput(window);
 
-            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+            glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
             
+            rb4->OnUpdate(FrameTime);   
+            rb2->OnUpdate(FrameTime);
             rb->OnUpdate(FrameTime);
-            rb3->OnUpdate(FrameTime);
-            rb5->OnUpdate(FrameTime);
-            rb7->OnUpdate(FrameTime);
-            rb9->OnUpdate(FrameTime);
             rb->OnDraw();
-            rb3->OnDraw();
-            rb5->OnDraw();
-            rb7->OnDraw();
-            rb9->OnDraw();
+            rb2->OnDraw();
+            rb4->OnDraw();
+            
+            
+            
             sb->OnDraw();
+            sb2->OnDraw();
+            sb3->OnDraw();
+            sb4->OnDraw();
 
             Renderer2D::Render();
 

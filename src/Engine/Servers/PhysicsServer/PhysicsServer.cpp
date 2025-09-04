@@ -61,11 +61,11 @@ Collision2DInfos Physics2DServer::CollisionSystem::CollisionDetection(Collision2
                 float penetration = totalRadius - dist;
                 
                 // MTV should point from A to B (separation direction)
-                info.MTV = -normal * penetration;
+                info.MTV = -1.0f * normal * penetration;
                 
                 // Contact point is the midpoint between the two circle surfaces
                 glm::vec2 contact = centerA + normal * (circleA->radius - penetration * 0.5f);
-                info.ContactPoints.push_back(contact);
+                info.ContactPoints.push_back(contact - A->transform->position);
             }
         }
         return info;
@@ -77,14 +77,17 @@ Collision2DInfos Physics2DServer::CollisionSystem::CollisionDetection(Collision2
     Collision2D* circleObj = nullptr;
     Collision2D* polyObj = nullptr;
     glm::vec2 circleCenter;
+    int sign;
 
     if ((circle = dynamic_cast<Circle2D*>(A->shape)) && vertsB.size() >= 3) {
+        sign = 1;
         circleObj = A;
         polyObj = B;
         polyVerts = &vertsB;
         circleCenter = A->transform->position;
     } 
     else if ((circle = dynamic_cast<Circle2D*>(B->shape)) && vertsA.size() >= 3) {
+        sign = -1;
         circleObj = B;
         polyObj = A;
         polyVerts = &vertsA;
@@ -164,15 +167,15 @@ Collision2DInfos Physics2DServer::CollisionSystem::CollisionDetection(Collision2
                         }
                     }
                     float penetration = circle->radius + minDist;
-                    info.MTV = normal * penetration;
+                    info.MTV =  -1.0f * float(sign) * normal * penetration ;
                 } else {
                     float penetration = circle->radius - minDist;
-                    info.MTV = normal * penetration;
+                    info.MTV = float(sign) * normal * penetration;
                 }
 
                 // Contact point is on the circle surface
                 glm::vec2 contact = circleCenter - normal * circle->radius;
-                info.ContactPoints.push_back(contact);
+                info.ContactPoints.push_back(contact - circleObj->transform->position);
             }
         }
         return info;
@@ -262,7 +265,7 @@ Collision2DInfos Physics2DServer::CollisionSystem::CollisionDetection(Collision2
             mtvAxis = -mtvAxis;
         }
 
-        info.MTV = mtvAxis * minOverlap;
+        info.MTV = -1.0f * mtvAxis * minOverlap;
 
         // Find contact points using clipping method
         auto findContactPoints = [&](const std::vector<glm::vec2>& poly1, const std::vector<glm::vec2>& poly2) {
@@ -289,11 +292,16 @@ Collision2DInfos Physics2DServer::CollisionSystem::CollisionDetection(Collision2
             size_t incIndex = 0;
             float minDot = std::numeric_limits<float>::max();
             
-            for (size_t i = 0; i < poly2.size(); i++) {
-                float dot = glm::dot(-mtvAxis, poly2[i] - centerB);
+            for (size_t i = 0; i < poly1.size(); i++) {
+                glm::vec2 v1 = poly1[i];
+                glm::vec2 v2 = poly1[(i+1) % poly1.size()];
+                glm::vec2 edge = v2 - v1;
+                glm::vec2 normal = glm::normalize(glm::vec2(-edge.y, edge.x));
+
+                float dot = glm::dot(normal, mtvAxis);
                 if (dot < minDot) {
                     minDot = dot;
-                    incIndex = i;
+                    refIndex = i;
                 }
             }
             
@@ -368,7 +376,7 @@ Collision2DInfos Physics2DServer::CollisionSystem::CollisionDetection(Collision2
 
             for (const auto& vert : vertsA) {
                 if (isInside(vertsB, vert)) {
-                    info.ContactPoints.push_back(vert);
+                    info.ContactPoints.push_back(vert - A->transform->position);
                 }
             }
         }
@@ -395,9 +403,8 @@ void Physics2DServer::CollisionSystem::UpdateCollisionInfos(Collision2D* obj) {
 
             if (other->PHYSICS_PARENT) {
                 // Take The first MTV
-                if (info.MTV != glm::vec2(0.0f) && obj->info.MTV == glm::vec2(0.0f))
-                    obj->info.MTV = info.MTV;
-                if (obj->info.ContactPoints.empty()) obj->info.ContactPoints = info.ContactPoints;
+                obj->info.MTV += info.MTV;
+                obj->info.ContactPoints.insert(obj->info.ContactPoints.end(), info.ContactPoints.begin(), info.ContactPoints.end());
                 obj->info.PhysicsColliders.push_back(other);
             }
         }

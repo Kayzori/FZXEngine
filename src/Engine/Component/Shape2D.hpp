@@ -17,18 +17,28 @@ class Box2D : public Shape2D
 public:
     // Constructors
     Box2D(float _width, float _height) :
-    width(_width),
-    height(_height)
+    w(_width),
+    h(_height)
+    {}
+
+    Box2D(float sq_size) :
+    w(sq_size),
+    h(sq_size)
+    {}
+
+    Box2D(glm::vec2 size) :
+    w(size.x),
+    h(size.y)
     {}
 
     // Properties
-    float width;
-    float height;
+    float w;
+    float h;
 
     // Method
     std::vector<glm::vec2> getVertices() override  {
-        float hx = width/2.0f;
-        float hy = height/2.0f;
+        float hx = w/2.0f;
+        float hy = h/2.0f;
         return {
             {-hx, -hy},
             {hx, -hy},

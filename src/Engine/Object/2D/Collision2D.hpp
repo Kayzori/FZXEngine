@@ -26,12 +26,26 @@ struct Collision2DInfos {
     std::vector<Collision2D*> PhysicsColliders;
     glm::vec2 MTV; // Minimum translation Vector
     std::vector<glm::vec2> ContactPoints;
+
+    static glm::vec2 getGlobalContactPoint(const std::vector<glm::vec2> _ContactPoints) {
+        glm::vec2 GlobalContactPoint = glm::vec2(0.0f);
+        for (const glm::vec2 ContactPoint : _ContactPoints) {
+            GlobalContactPoint += ContactPoint;
+        }
+        GlobalContactPoint /= _ContactPoints.size();
+        return GlobalContactPoint;
+    }
 };
 
 class Collision2D : public Object2D {
 public:
     // Con/De structor
-    Collision2D(Shape2D* _shape, glm::vec4 _color = glm::vec4(1, 1, 1, 1));
+    Collision2D(
+        Shape2D* _shape,
+        glm::vec4 _color = {1.0f, 1.0f, 1.0f, 1.0f},
+        glm::vec4 _outline_color = {0.0f, 0.0f, 0.0f, 1.0f},
+        glm::vec4 _colliding_color = {1.0f, 0.0f, 0.0f, 1.0f}
+    );
     ~Collision2D();
 
     // PhysicsBody (Parent)
@@ -40,6 +54,8 @@ public:
     // Properties
     Shape2D* shape;
     glm::vec4 color;
+    glm::vec4 outline_color;
+    glm::vec4 colliding_color;
     Collision2DInfos info;
 
     // Methods

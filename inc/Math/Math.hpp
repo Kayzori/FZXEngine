@@ -33,6 +33,14 @@ inline std::ostream& operator<<(std::ostream& os, const glm::vec4& vec) {
     return os;
 }
 
+inline std::ostream& operator<<(std::ostream& os, const std::vector<glm::vec2>& vecs) {
+    for (glm::vec2 vec : vecs) {
+        os << '(' << vec.x << ", " << vec.y << ')';
+        os << '\n';
+    }
+    return os;
+}
+
 struct AABB {
     float x{0.0f};
     float y{0.0f};
@@ -139,3 +147,4 @@ struct AABB {
 
 inline float deg2rad(float degrees) {return degrees * PI / 180.0f;}
 inline float rad2deg(float radians) {return radians * 180 / PI;}
+
