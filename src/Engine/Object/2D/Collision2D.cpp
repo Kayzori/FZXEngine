@@ -13,22 +13,53 @@ color(_color),
 outline_color(_outline_color),
 colliding_color(_colliding_color)
 {
-    Physics2DServer::CollisionSystem::InsertCollision(this);
+    PhysicsServer::CollisionSystem::InsertCollision(this);
 }
 
 Collision2D::~Collision2D() {
-    Physics2DServer::CollisionSystem::DeleteCollision(this);
+    PhysicsServer::CollisionSystem::DeleteCollision(this);
     if (shape) delete shape;
 }
 
 // Methods
 std::vector<glm::vec2> Collision2D::getVertices() {
-    return transform->Apply(shape->getVertices());
+    return transform->Apply(shape->vertices);
+}
+
+std::vector<Edge2D> Collision2D::getEdges() {
+    std::vector<glm::vec2> verts = transform->Apply(shape->vertices);
+    std::vector<Edge2D> edges;
+    for (int i = 0; i < int(verts.size()); i++) {
+        edges.push_back(Edge2D(verts[i], verts[(i + 1) % verts.size()]));
+    }
+    return edges;
+}
+
+glm::vec2 Collision2D::getCenter() {
+    return transform->Apply({shape->center})[0];
+}
+
+AABB Collision2D::getBounds() {
+    return AABB(transform->Apply(shape->getAABB().getVertices()));
+}
+
+bool Collision2D::hasPoint(glm::vec2 point) {
+    bool inside = false;
+    std::vector<glm::vec2> polygon = getVertices();
+    int n = polygon.size();
+    for (int i = 0, j = n - 1; i < n; j = i++) {
+        if (((polygon[i].y > point.y) != (polygon[j].y > point.y)) &&
+            (point.x < (polygon[j].x - polygon[i].x) * (point.y - polygon[i].y) / 
+                      (polygon[j].y - polygon[i].y) + polygon[i].x)) {
+            inside = !inside;
+        }
+    }
+    return inside;
 }
 
 // GameLoop
 void Collision2D::OnUpdate(float delta) {
-    Physics2DServer::CollisionSystem::UpdateCollisionInfos(this);
+    PhysicsServer::CollisionSystem::UpdateCollisionInfos(this);
 }
 
 void Collision2D::OnDraw() {
@@ -37,4 +68,7 @@ void Collision2D::OnDraw() {
     else Renderer2D::DrawPolygon(verts, color);
     Renderer2D::DrawLines(verts, outline_color);
     Renderer2D::DrawLines({verts[0], transform->position}, outline_color);
+    for (auto& [other, contacts] : info.ContactPoints) {
+        Renderer2D::DrawPoints(contacts, {1, 0, 0, 1}, 10.0f);
+    }
 }

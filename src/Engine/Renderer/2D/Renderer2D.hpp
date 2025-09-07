@@ -16,8 +16,9 @@ public:
     static void Init(int width, int height);
     static void Delete();
 
-    static void DrawPolygon(const std::vector<glm::vec2> vertices, const glm::vec4 color);
-    static void DrawLines(const std::vector<glm::vec2> points, const glm::vec4 color);
+    static void DrawPolygon(const std::vector<glm::vec2>& vertices, const glm::vec4& color);
+    static void DrawLines(const std::vector<glm::vec2>& points, const glm::vec4& color, float thickness = 1.0f);
+    static void DrawPoints(const std::vector<glm::vec2>& points, const glm::vec4& color, float size = 1.0f);
 
     static void Render();
 
@@ -32,10 +33,8 @@ private:
 
     static inline glm::mat4 projection;
 
-    static constexpr size_t MAX_VERTICES = 10000;
-
-    static inline std::vector<Vertex2D> triangleBatch;
-    static inline std::vector<Vertex2D> lineBatch;
+    static constexpr size_t MAX_VERTICES = 1000000;
+    static inline std::vector<Vertex2D> vertexBatch;
 
     static inline const char* vertexShaderSrc = R"(
         #version 330 core

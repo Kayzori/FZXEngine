@@ -1,12 +1,17 @@
 #pragma once
 #include "../Object.hpp"
-#include <Engine/Component/Transform2D.hpp>
 
 class Object2D : public Object {
 public:
     // Con/De structor
-    Object2D();
-    ~Object2D();
+    Object2D() {
+        transform = new Transform2D();
+    }
+
+    ~Object2D() {
+        transform = new Transform2D();
+        delete transform;
+    }
 
     // Properties
     Transform2D* transform;

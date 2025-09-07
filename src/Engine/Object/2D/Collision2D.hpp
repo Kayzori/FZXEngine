@@ -1,7 +1,5 @@
 #pragma once
-#include <Engine/Component/Components.h>
 #include "Object2D.hpp"
-#include <Engine/Renderer/2D/Renderer2D.hpp>
 
 class Collision2D;
 
@@ -12,7 +10,7 @@ struct Collision2DInfos {
         Colliders({}),
         isPhysicsColliding(false),
         PhysicsColliders({}),
-        MTV({0.0f, 0.0f}),
+        MTV({}),
         ContactPoints({})
     {}
 
@@ -24,17 +22,8 @@ struct Collision2DInfos {
     // Physics Body Collision Infos
     bool isPhysicsColliding;
     std::vector<Collision2D*> PhysicsColliders;
-    glm::vec2 MTV; // Minimum translation Vector
-    std::vector<glm::vec2> ContactPoints;
-
-    static glm::vec2 getGlobalContactPoint(const std::vector<glm::vec2> _ContactPoints) {
-        glm::vec2 GlobalContactPoint = glm::vec2(0.0f);
-        for (const glm::vec2 ContactPoint : _ContactPoints) {
-            GlobalContactPoint += ContactPoint;
-        }
-        GlobalContactPoint /= _ContactPoints.size();
-        return GlobalContactPoint;
-    }
+    std::unordered_map<Collision2D*, glm::vec2> MTV; // Minimum translation Vector
+    std::unordered_map<Collision2D*, std::vector<glm::vec2>> ContactPoints;
 };
 
 class Collision2D : public Object2D {
@@ -60,6 +49,10 @@ public:
 
     // Methods
     std::vector<glm::vec2> getVertices();
+    std::vector<Edge2D> getEdges();
+    glm::vec2 getCenter();
+    AABB getBounds();
+    bool hasPoint(glm::vec2 point);
 
     void OnUpdate(float delta) override;
     void OnDraw() override;

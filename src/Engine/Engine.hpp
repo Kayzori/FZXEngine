@@ -5,7 +5,7 @@ class Engine
 private:
     /* data */
 public:
-
+    
     Engine(/* args */);
     ~Engine();
 };

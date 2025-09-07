@@ -3,10 +3,12 @@
 #include <vector>
 #include <Math/Math.hpp>
 #include <Engine/Object/2D/Collision2D.hpp>
-#include "QuadTree.hpp"
+#include <Engine/Object/2D/PhysicsBody2D/RigidBody2D.hpp>
+#include "CollisionQuadTree.hpp"
+#include "Algorithms/CollisionDetectionAlgorithm.hpp"
 
 // SERVER
-class Physics2DServer {
+class PhysicsServer {
 public:
     // Consts
     inline static float Gravity = 980.0f;
@@ -16,24 +18,26 @@ public:
     class CollisionSystem
     {
     public:
-        // Init board for QuadTree
         static void InitCollisionBoard(AABB board);
+        static void RenderCollisionBoard();
+        static void UpdateCollisionBoard();
 
-        // Collision management
         static void InsertCollision(Collision2D* obj);
         static void DeleteCollision(Collision2D* obj);
         static const std::unordered_set<Collision2D*>& GetCollisions();
 
-        // Collision Detection With Neighbors
-        // QuadTree To Get Neighbors
-        // Uses Base Algorithm To Update Infos
         static void UpdateCollisionInfos(Collision2D* obj);
 
-        // Base Collision Detection Algorithm
-        // AABB + SAT Collision Detection
-        static Collision2DInfos CollisionDetection(Collision2D* A, Collision2D* B);
     private:
-        inline static QuadTree tree = QuadTree(0, {0.0f, 0.0f, 0.0f, 0.0f});
-        inline static std::unordered_set<Collision2D*> Collision2DObjects;
+        inline static CollisionQuadTree tree = CollisionQuadTree(0, AABB({0.0f, 0.0f, 0.0f, 0.0f}));
+    };
+
+    class RigidBodySystem {
+    public:
+        // Solver
+        static void Solve(RigidBody2D* obj, const Collision2DInfos& info);
+    private:
+        static void SolveToStaticBody(RigidBody2D* obj, PhysicsBody2D* other, const Collision2DInfos& info);
+        static void SolveToDynamicBody(RigidBody2D* obj, RigidBody2D* other, const Collision2DInfos& info);
     };
 };

@@ -1,11 +1,16 @@
 #pragma once
 #include <Scripting/Signal.hpp>
+#include <Math/Math.hpp>
+#include <Engine/Renderer/2D/Renderer2D.hpp>
+#include <Engine/Component/Component.h>
 
 // BASE CLASS
 class Object
 {
 public:
     // Con/De structor
+    std::string name;
+
     Object() = default;
     virtual ~Object() = default;
 
