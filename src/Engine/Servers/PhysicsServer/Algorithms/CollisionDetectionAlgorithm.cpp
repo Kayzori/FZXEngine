@@ -292,3 +292,5 @@ Collision2DInfos CDA::Detect(Collision2D* A, Collision2D* B) {
     if (circleB && vertsA.size() >= 3) return CPCD(B, A, B);
     return PPCD(A, B);
 }
+
+

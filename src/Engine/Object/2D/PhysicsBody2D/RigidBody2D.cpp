@@ -194,9 +194,7 @@ void RigidBody2D::MoveAndCollide(float delta)
     if (isStatic || isSleeping) return;
 
     ApplyForce(PhysicsServer::Gravity * PhysicsServer::GravityDirection * mass * gravityScale);
-
-    collision->OnUpdate(delta);
-
+    
     IntegrateForces(delta);
 
     if (collision->info.isPhysicsColliding) {

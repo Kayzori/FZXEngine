@@ -55,8 +55,8 @@ private:
     void CalculateInertia();
     void checkSleep();
 
-    const float sleepLinearThreshold = 5.0f;   // tweak
-    const float sleepAngularThreshold = 5.0f;  // tweak
+    const float sleepLinearThreshold = 5.0f;
+    const float sleepAngularThreshold = 5.0f; 
 
     float inertia;
     glm::vec2 acceleration;

@@ -7,8 +7,8 @@
 
 std::random_device rd;
 std::mt19937 gen(rd());
-std::uniform_real_distribution<float> distX(100.0f, 1180.0f);
-std::uniform_real_distribution<float> distY(100.0f, 620.0f);
+std::uniform_real_distribution<float> distX(10.0f, 1270.0f);
+std::uniform_real_distribution<float> distY(10.0f, 710.0f);
 std::uniform_real_distribution<float> randi(-1, 1);
 
 std::vector<RigidBody2D*> rigs;
@@ -28,6 +28,11 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 void processInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+    if (glfwGetKey(window, GLFW_KEY_KP_ADD) == GLFW_PRESS) {
+        RigidBody2D* rig = rigs.back();
+        rigs.pop_back();
+        delete rig;
+    }
 }
 
 
@@ -45,7 +50,7 @@ int main() {
 
     const int screenWidth = 1280;
     const int screenHeight = 720;
-    GLFWwindow* window = glfwCreateWindow(screenWidth, screenHeight, "Renderer2D", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(screenWidth, screenHeight, "FZXEngine", nullptr, nullptr);
     if (!window) {
         std::cerr << "Failed to create GLFW window\n";
         glfwTerminate();
@@ -74,15 +79,17 @@ int main() {
 
     // ---------------- Init Scene ----------------
     AABB board = {{screenWidth / 2, screenHeight / 2}, {screenWidth / 2, screenHeight / 2}};
-    PhysicsServer::CollisionSystem::InitCollisionBoard(board);
+    PhysicsServer::CollisionSystem::SpatialGrid = new CollisionSpatialGrid(board);
     Renderer2D::Init(screenWidth, screenHeight);
 
-    for (int i = 0; i < 100; i++) {
+    int i = 0;
+    while (i < 500) {
+        i++;
         glm::vec2 randomPos(distX(gen), distY(gen));
 
         rigs.push_back(new RigidBody2D(
             new Collision2D(
-                new Circle2D(25.0f, 16), 
+                new Box2D(25.0f), 
                 {0, 0, 0, 0}, 
                 {0, 1, 0, 1}, 
                 {0, 0, 0, 0}
@@ -97,8 +104,20 @@ int main() {
 
         RigidBody2D* newRig = rigs.back();
         newRig->transform->position = randomPos;
-        newRig->ApplyForce({640 * randi(gen), 360 * randi(gen)});
+        newRig->ApplyForce({640 * randi(gen) * 30, 360 * randi(gen) * 30});
     }
+
+    Collision2D* col = new Collision2D
+    (
+        new Box2D(10.0f), 
+        {0, 0, 0, 0}, 
+        {0, 1, 0, 1}, 
+        {0, 0, 0, 0}
+    );
+
+    col->transform->position = {100, 100};
+    col->transform->scale = {5, 5};
+    col->transform->rotation = 45.0f;
 
     StaticBody2D* sb = new StaticBody2D(new Collision2D(new Box2D(1280, 50), {1, 1, 1, 1}, glm::vec4(0.0f)));
     sb->transform->position = {640, 745};
@@ -127,30 +146,25 @@ int main() {
 
             glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
+            PhysicsServer::Update();
 
             for (RigidBody2D* rig : rigs) {
-                rig->OnUpdate(deltaTime);
-                rig->OnDraw();
-                if (rig->transform->position.x < 0.0f) rig->transform->position.x = 1280.0f;
-                if (rig->transform->position.x > 1280.0f) rig->transform->position.x = 0.0f;
-                if (rig->transform->position.y < 0.0f) rig->transform->position.y = 720.0f;
-                if (rig->transform->position.y > 720.0f) rig->transform->position.y = 0.0f;
-                bool inside = board.contains(rig->transform->position);
+                if (rig)
+                    rig->OnUpdate(deltaTime);
+                    rig->OnDraw();
+                    bool inside = board.contains(rig->transform->position);
 
-                if (inside && inBoard.find(rig) == inBoard.end()) {
-                    inBoard.insert(rig);
-                } 
-                else if (!inside && inBoard.find(rig) != inBoard.end()) {
-                    inBoard.erase(rig);
-                }
+                    if (inside && inBoard.find(rig) == inBoard.end()) {
+                        inBoard.insert(rig);
+                    } 
+                    else if (!inside && inBoard.find(rig) != inBoard.end()) {
+                        inBoard.erase(rig);
+                    }
             }
-
-            PhysicsServer::CollisionSystem::UpdateCollisionBoard();
-            PhysicsServer::CollisionSystem::RenderCollisionBoard();
 
             Renderer2D::Render();
             
-            std::cout << deltaTime << std::endl;
+            std::cout << int(1.0f/deltaTime)  << "FPS" << std::endl;
             std::cout << "rigs : " << rigs.size() << std::endl;
             std::cout << "in board :" << inBoard.size() << std::endl;
 

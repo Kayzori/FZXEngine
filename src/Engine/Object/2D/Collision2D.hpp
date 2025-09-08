@@ -54,6 +54,5 @@ public:
     AABB getBounds();
     bool hasPoint(glm::vec2 point);
 
-    void OnUpdate(float delta) override;
     void OnDraw() override;
 };

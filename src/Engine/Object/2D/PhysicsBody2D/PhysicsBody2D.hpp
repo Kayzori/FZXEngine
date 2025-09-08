@@ -9,13 +9,12 @@ public:
     PhysicsBody2D(Collision2D* _collision): collision(_collision) {
         if (collision) {
             collision->PHYSICS_PARENT = this;
-            collision->transform = transform;
+            collision->transform = this->transform;
         }
     }
     ~PhysicsBody2D() {
-        if (collision) {
-            delete collision;
-        }
+        collision = new Collision2D(new Shape2D());
+        delete collision;
     };
 
     // Properties

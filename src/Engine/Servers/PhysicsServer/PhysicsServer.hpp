@@ -4,8 +4,8 @@
 #include <Math/Math.hpp>
 #include <Engine/Object/2D/Collision2D.hpp>
 #include <Engine/Object/2D/PhysicsBody2D/RigidBody2D.hpp>
-#include "CollisionQuadTree.hpp"
 #include "Algorithms/CollisionDetectionAlgorithm.hpp"
+#include "CollisionSpatialGrid.hpp"
 
 // SERVER
 class PhysicsServer {
@@ -14,22 +14,15 @@ public:
     inline static float Gravity = 980.0f;
     inline static glm::vec2 GravityDirection = {0, 1};
 
+    static void Update();
+    static void Render();
+
     // Systems
     class CollisionSystem
     {
     public:
-        static void InitCollisionBoard(AABB board);
-        static void RenderCollisionBoard();
-        static void UpdateCollisionBoard();
-
-        static void InsertCollision(Collision2D* obj);
-        static void DeleteCollision(Collision2D* obj);
-        static const std::unordered_set<Collision2D*>& GetCollisions();
-
-        static void UpdateCollisionInfos(Collision2D* obj);
-
-    private:
-        inline static CollisionQuadTree tree = CollisionQuadTree(0, AABB({0.0f, 0.0f, 0.0f, 0.0f}));
+        inline static CollisionSpatialGrid* SpatialGrid = nullptr;
+        static void UpdateCollisionInfos(Collision2D* obj, Collision2D* other);
     };
 
     class RigidBodySystem {

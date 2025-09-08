@@ -13,11 +13,11 @@ color(_color),
 outline_color(_outline_color),
 colliding_color(_colliding_color)
 {
-    PhysicsServer::CollisionSystem::InsertCollision(this);
+    PhysicsServer::CollisionSystem::SpatialGrid->AddObject(this);
 }
 
 Collision2D::~Collision2D() {
-    PhysicsServer::CollisionSystem::DeleteCollision(this);
+    PhysicsServer::CollisionSystem::SpatialGrid->RemoveObject(this);
     if (shape) delete shape;
 }
 
@@ -40,7 +40,7 @@ glm::vec2 Collision2D::getCenter() {
 }
 
 AABB Collision2D::getBounds() {
-    return AABB(transform->Apply(shape->getAABB().getVertices()));
+    return AABB(getVertices());
 }
 
 bool Collision2D::hasPoint(glm::vec2 point) {
@@ -55,11 +55,6 @@ bool Collision2D::hasPoint(glm::vec2 point) {
         }
     }
     return inside;
-}
-
-// GameLoop
-void Collision2D::OnUpdate(float delta) {
-    PhysicsServer::CollisionSystem::UpdateCollisionInfos(this);
 }
 
 void Collision2D::OnDraw() {

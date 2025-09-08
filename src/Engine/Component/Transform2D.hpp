@@ -26,6 +26,40 @@ public:
         return result;
     }
 
+    std::vector<glm::vec2> ApplyScale(std::vector<glm::vec2> points) const {
+        std::vector<glm::vec2> result;
+        for (glm::vec2 point : points) {
+            point *= scale;
+            result.push_back(point);
+        }
+        return result;
+    }
+
+    std::vector<glm::vec2> ApplyPosition(std::vector<glm::vec2> points) const {
+        std::vector<glm::vec2> result;
+        for (glm::vec2 point : points) {
+            point += position + offset;
+            result.push_back(point);
+        }
+        return result;
+    }
+
+    std::vector<glm::vec2> ApplyRotation(std::vector<glm::vec2> points) const {
+        std::vector<glm::vec2> result;
+        float rad = deg2rad(rotation);
+        float cosR = std::cos(rad);
+        float sinR = std::sin(rad);
+        for (glm::vec2 point : points) {
+            glm::vec2 rotated{
+                point.x * cosR - point.y * sinR,
+                point.x * sinR + point.y * cosR
+            };
+            point = rotated;
+            result.push_back(point);
+        }
+        return result;
+    }
+ 
     Transform2D(glm::vec2 _offset = {0.0f, 0.0f}, glm::vec2 _position = {0.0f, 0.0f}, glm::vec2 _scale = {1.0f, 1.0f}, float _rotation = 0.0f)
     :
         offset(_offset),

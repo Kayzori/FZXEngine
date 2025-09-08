@@ -1,55 +1,42 @@
 #include "PhysicsServer.hpp"
 
+/* Global */
+void PhysicsServer::Update()
+{
+    CollisionSystem::SpatialGrid->Update();
+
+    for (auto* obj : CollisionSystem::SpatialGrid->Objects) {
+        obj->info = Collision2DInfos();
+    }
+
+    std::vector<std::pair<Collision2D*, Collision2D*>> pairs = CollisionSystem::SpatialGrid->CollectPhyisicsPair();
+    
+    for (auto& pair : pairs) {
+        CollisionSystem::UpdateCollisionInfos(pair.first, pair.second);
+    }
+}
+
+void PhysicsServer::Render() {
+    CollisionSystem::SpatialGrid->Render();
+}
+
 /* Collision System */
 
-// ------------------------- Init --------------------------
-void PhysicsServer::CollisionSystem::InitCollisionBoard(AABB board) {
-    tree.clear();
-    tree.setBoard(board);
-}
+void PhysicsServer::CollisionSystem::UpdateCollisionInfos(Collision2D* obj, Collision2D* other) {
+    if (other == obj) return;
 
-// ------------------------ Update -------------------------
+    Collision2DInfos info = CDA::Detect(obj, other);
+    if (info.isColliding) {
+        obj->info.isColliding = true;
+        obj->info.Colliders.push_back(other);
 
-void PhysicsServer::CollisionSystem::UpdateCollisionBoard() {
-    tree.update();
-}
-
-// ----------------------- Rendering -----------------------
-void PhysicsServer::CollisionSystem::RenderCollisionBoard() {
-    tree.render();
-}
-
-// ----------------- Insert / Delete / Get -----------------
-void PhysicsServer::CollisionSystem::InsertCollision(Collision2D* obj) {
-    tree.insert(obj);
-}
-
-void PhysicsServer::CollisionSystem::DeleteCollision(Collision2D* obj) {
-    tree.remove(obj);
-}
-
-// ------------------ Collision Updates Infos -----------------
-void PhysicsServer::CollisionSystem::UpdateCollisionInfos(Collision2D* obj) {
-    std::vector<Collision2D*> candidates;
-    tree.retrieve(obj, candidates);
-    obj->info = Collision2DInfos();
-
-    for (Collision2D* other : candidates) {
-        if (other == obj) continue;
-
-        Collision2DInfos info = CDA::Detect(obj, other);
-        if (info.isColliding) {
-            obj->info.isColliding = true;
-            obj->info.Colliders.push_back(other);
-
-            if (other->PHYSICS_PARENT) {
-                obj->info.MTV.insert_or_assign(other, info.MTV[other]);
-                obj->info.ContactPoints.insert_or_assign(other, info.ContactPoints[other]);
-                obj->info.PhysicsColliders.push_back(other);
-            }
+        if (other->PHYSICS_PARENT) {
+            obj->info.MTV.insert_or_assign(other, info.MTV[other]);
+            obj->info.ContactPoints.insert_or_assign(other, info.ContactPoints[other]);
+            obj->info.PhysicsColliders.push_back(other);
         }
-        if (info.isPhysicsColliding) obj->info.isPhysicsColliding = true;
     }
+    if (info.isPhysicsColliding) obj->info.isPhysicsColliding = true;
 }
 
 /* RigidBody System */
@@ -102,6 +89,8 @@ void PhysicsServer::RigidBodySystem::SolveToStaticBody(RigidBody2D* obj, Physics
 
         float rCrossN = glm::cross(glm::vec3(contact, 0.0f), glm::vec3(normal, 0.0f)).z;
         float effectiveMass = 1.0f / ((1.0f / obj->mass) + (rCrossN * rCrossN) / obj->getInertia());
+
+        // Restitution
 
         float e = obj->restitution;
         if (std::abs(velAlongNormal) < 1.0f)
@@ -158,6 +147,8 @@ void PhysicsServer::RigidBodySystem::SolveToDynamicBody(RigidBody2D* obj, RigidB
 
         float velAlongNormal = glm::dot(relVel, normal);
         if (velAlongNormal > -1e-4f) continue;
+
+        // Restitution
 
         float e = std::min(obj->restitution, other->restitution);
         if (std::abs(velAlongNormal) < 1.0f)
