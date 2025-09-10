@@ -1,6 +1,6 @@
 # FZXEngine
 
-![FZXEngine Screenshot](screenshots/GavityBalls.png)
+![FZXEngine Screenshot](screenshots/GravityBalls.png)
 ![FZXEngine Screenshot](screenshots/2000BoxSpace.png)
 
 FZXEngine is a lightweight **2D physics engine** written in C++.  
