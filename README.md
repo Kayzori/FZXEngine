@@ -1,6 +1,6 @@
 # FZXEngine
 
-
+![FZXEngine Screenshot](screenshots/screenshot.png)
 
 FZXEngine is a lightweight **2D physics engine** written in C++.  
 It focuses on simulating **rigid bodies, collisions, and physical interactions** in a game-like environment, with a minimal rendering layer for visualization.
