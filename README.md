@@ -46,8 +46,8 @@ With FZXEngine, you can:
 ---
 
 ## Whats Messing (Soon Added)
-
 - Stacking Logic For Rig Bodies
 - Sleep Logic For Rig Bodies
 - Maybe New Renderer
 - More Optimization On Algorithms
+- GameLoop
