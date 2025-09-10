@@ -39,7 +39,6 @@ void Renderer2D::Delete() {
     Initialized = false;
 }
 
-// Add triangles from polygon to batch
 void Renderer2D::DrawPolygon(const std::vector<glm::vec2>& vertices, const glm::vec4& color) {
     std::vector<Triangle2D> triangles = Triangulator2D::FanTriangulation(vertices);
     for (auto& t : triangles) {
@@ -50,7 +49,6 @@ void Renderer2D::DrawPolygon(const std::vector<glm::vec2>& vertices, const glm::
     }
 }
 
-// Convert lines to thin quads (2 triangles per line)
 void Renderer2D::DrawLines(const std::vector<glm::vec2>& points, const glm::vec4& color, float thickness) {
     size_t n = points.size();
     if (n < 2) return;

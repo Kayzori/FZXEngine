@@ -1,5 +1,4 @@
 #pragma once
-#include <Scripting/Signal.hpp>
 #include <Math/Math.hpp>
 #include <Engine/Renderer/2D/Renderer2D.hpp>
 #include <Engine/Component/Component.h>

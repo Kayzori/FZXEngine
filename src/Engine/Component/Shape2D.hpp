@@ -2,6 +2,8 @@
 #include <Math/Math.hpp>
 #include <Engine/Component/Component.hpp>
 
+// TODO: update as Object2D
+
 // Base Shape
 class Shape2D : Component
 {

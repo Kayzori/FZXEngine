@@ -19,12 +19,12 @@ std::unordered_set<RigidBody2D*> inBoard;
 bool windowMoving = false;
 std::chrono::high_resolution_clock::time_point lastMoveTime;
 
-// ---------------- GLFW Callbacks ----------------
+// ----------------- GLFW Callbacks -----------------
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-// ---------------- Input ----------------
+// -------------------- Input -----------------------
 void processInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
@@ -82,14 +82,13 @@ int main() {
     PhysicsServer::CollisionSystem::SpatialGrid = new CollisionSpatialGrid(board);
     Renderer2D::Init(screenWidth, screenHeight);
 
-    int i = 0;
-    while (i < 500) {
+    for (int i = 0; i < 50; i++) {
         i++;
         glm::vec2 randomPos(distX(gen), distY(gen));
 
         rigs.push_back(new RigidBody2D(
             new Collision2D(
-                new Box2D(25.0f), 
+                new Circle2D(25.0f, 16), 
                 {0, 0, 0, 0}, 
                 {0, 1, 0, 1}, 
                 {0, 0, 0, 0}
@@ -97,7 +96,7 @@ int main() {
             1.0,  // Mass
             1.0f,  // Restitution
             1.0f,  // Friction
-            0.0f,  // GravityScale
+            1.0f,  // GravityScale
             0.01f,  // L.Damping
             0.01f   // A.Damping
         ));

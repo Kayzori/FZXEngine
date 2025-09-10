@@ -1,6 +1,10 @@
 #include "Collision2D.hpp"
 #include <Engine/Servers/PhysicsServer/PhysicsServer.hpp>
 
+// The Collision Class Isn't organized that much due to so methods must be from Shape2D
+// and not this object
+// TODO: Update Shape2D as an Object2D
+
 // Con/De structor
 Collision2D::Collision2D(
     Shape2D* _shape,

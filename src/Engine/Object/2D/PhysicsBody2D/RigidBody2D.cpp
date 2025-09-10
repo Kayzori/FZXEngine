@@ -83,7 +83,7 @@ float RigidBody2D::getInertia() {return inertia;}
 
 void RigidBody2D::WakeUp()
 {
-    std::cout << "Waky Waky" << std::endl;
+    std::cout << "Waky Waky" << std::endl; // IDK it seems cool for debugging :)
     isSleeping = false;
 }
 
@@ -175,6 +175,7 @@ void RigidBody2D::IntegrateVelocities(float delta)
     }
 }
 
+// TODO
 void RigidBody2D::checkSleep()
 {
     if (!canSleep) return;
