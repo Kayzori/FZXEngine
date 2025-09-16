@@ -12,7 +12,8 @@ std::uniform_real_distribution<float> distY(10.0f, 710.0f);
 std::uniform_real_distribution<float> randi(-1, 1);
 
 std::vector<RigidBody2D*> rigs;
-std::unordered_set<RigidBody2D*> inBoard;
+const int amount = 1000;
+
 
 // ---------------- Global Variables ----------------
 
@@ -28,11 +29,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 void processInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-    if (glfwGetKey(window, GLFW_KEY_KP_ADD) == GLFW_PRESS) {
-        RigidBody2D* rig = rigs.back();
-        rigs.pop_back();
-        delete rig;
-    }
 }
 
 
@@ -82,41 +78,27 @@ int main() {
     PhysicsServer::CollisionSystem::SpatialGrid = new CollisionSpatialGrid(board);
     Renderer2D::Init(screenWidth, screenHeight);
 
-    for (int i = 0; i < 50; i++) {
-        i++;
-        glm::vec2 randomPos(distX(gen), distY(gen));
-
-        rigs.push_back(new RigidBody2D(
+    for (int i = 0; i < amount; i++) {
+        RigidBody2D* newRig = new RigidBody2D(
             new Collision2D(
-                new Circle2D(25.0f, 16), 
-                {0, 0, 0, 0}, 
-                {0, 1, 0, 1}, 
-                {0, 0, 0, 0}
+                new Circle2D(5.0f, 8),
+                { 0, 0, 0, 0 },
+                { 0, 1, 0, 1 },
+                { 0, 0, 0, 0 }
             ),
-            1.0,  // Mass
-            1.0f,  // Restitution
-            1.0f,  // Friction
-            1.0f,  // GravityScale
-            0.01f,  // L.Damping
-            0.01f   // A.Damping
-        ));
-
-        RigidBody2D* newRig = rigs.back();
-        newRig->transform->position = randomPos;
-        newRig->ApplyForce({640 * randi(gen) * 30, 360 * randi(gen) * 30});
+            1.0,    // mass
+            1.0,    // restitution
+            0.5,    // friction
+            0.0,    // gravity scale
+            0.01,   // l damping
+            0.01,   // a damping
+            false,  // sleep
+            false   // static
+        );
+        newRig->transform->position = { distX(gen), distY(gen) };
+        newRig->ApplyForce({ distX(gen) * randi(gen), distY(gen) * randi(gen) });
+        rigs.push_back(newRig);
     }
-
-    Collision2D* col = new Collision2D
-    (
-        new Box2D(10.0f), 
-        {0, 0, 0, 0}, 
-        {0, 1, 0, 1}, 
-        {0, 0, 0, 0}
-    );
-
-    col->transform->position = {100, 100};
-    col->transform->scale = {5, 5};
-    col->transform->rotation = 45.0f;
 
     StaticBody2D* sb = new StaticBody2D(new Collision2D(new Box2D(1280, 50), {1, 1, 1, 1}, glm::vec4(0.0f)));
     sb->transform->position = {640, 745};
@@ -147,25 +129,16 @@ int main() {
             glClear(GL_COLOR_BUFFER_BIT);
             PhysicsServer::Update();
 
-            for (RigidBody2D* rig : rigs) {
-                if (rig)
-                    rig->OnUpdate(deltaTime);
-                    rig->OnDraw();
-                    bool inside = board.contains(rig->transform->position);
-
-                    if (inside && inBoard.find(rig) == inBoard.end()) {
-                        inBoard.insert(rig);
-                    } 
-                    else if (!inside && inBoard.find(rig) != inBoard.end()) {
-                        inBoard.erase(rig);
-                    }
+            for (int i = 0; i < amount; i++) {
+                rigs[i]->OnUpdate(deltaTime);
+                rigs[i]->OnDraw();
             }
+
 
             Renderer2D::Render();
             
             std::cout << int(1.0f/deltaTime)  << "FPS" << std::endl;
             std::cout << "rigs : " << rigs.size() << std::endl;
-            std::cout << "in board :" << inBoard.size() << std::endl;
 
             glfwSwapBuffers(window);
             glfwPollEvents();
@@ -174,9 +147,10 @@ int main() {
         }
     }
 
-    for(RigidBody2D* rig : rigs) {
-        delete rig;
-    }
+	for (int i = 0; i < amount; i++) {
+        delete rigs[i];
+	}
+
     glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
