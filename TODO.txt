@@ -1,0 +1,50 @@
+Architecture:
+PhysicsEngine
+│
+├── World
+│    ├── Bodies (RigidBody, SoftBody, etc.)
+│    ├── Shapes (Circle, Polygon, ConvexHull, Capsule...)
+│    ├── Constraints (Joint, DistanceConstraint, Spring, etc.)
+│    ├── Colliders (Broadphase + Narrowphase)
+│    ├── Solvers (Velocity + Position Solvers)
+│    └── Integrators (Euler, Semi-Implicit, RK4, etc.)
+│
+├── Math Library
+│    ├── Vector2 / Vector3
+│    ├── Matrix2x2 / Matrix3x3
+│    ├── Quaternion
+│    ├── Transform / AABB / Ray
+│    └── Utility (dot, cross, normalize, etc.)
+│
+├── Collision System
+│    ├── Broadphase
+│    │    ├── AABB Tree / SAP / Grid / BVH
+│    │    └── Detect possible colliding pairs
+│    ├── Narrowphase
+│    │    ├── SAT / GJK / EPA / Circle tests
+│    │    └── Generates ContactManifold
+│    └── Contact Solver
+│         ├── Restitution, friction, impulses
+│         └── Constraint resolution
+│
+├── Integrator
+│    ├── Force accumulation
+│    ├── Velocity + position update
+│    └── Damping / sleep logic
+│
+├── Constraint Solver
+│    ├── Joints (hinge, spring, slider)
+│    ├── Motors / limits
+│    └── Iterative solvers (Gauss-Seidel, PGS)
+│
+├── Scene Interface (API)
+│    ├── AddBody(), RemoveBody()
+│    ├── AddJoint(), AddForce()
+│    ├── StepSimulation(dt)
+│    └── QueryWorld(RayCast, AABB test, overlap)
+│
+└── Debug Tools
+     ├── Collision visualization
+     ├── Contact point rendering
+     ├── Profiling (timers, iteration counts)
+     └── Logging / error checking
