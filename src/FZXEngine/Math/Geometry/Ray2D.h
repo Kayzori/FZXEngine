@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Algebra/Vector2.h"
+#include "../Algebra/Vector/Vector2.h"
 
 class Ray2D
 {

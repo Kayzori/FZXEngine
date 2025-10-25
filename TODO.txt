@@ -48,3 +48,9 @@ PhysicsEngine
      ├── Contact point rendering
      ├── Profiling (timers, iteration counts)
      └── Logging / error checking
+
+
+Tasks:
+ - Narrow Phase (Collision Detection Algorithm)
+ - API (Renderer/UI)
+ - PhysicsBodies

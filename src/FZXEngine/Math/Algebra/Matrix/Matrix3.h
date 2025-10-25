@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Vector3.h"
+#include "../Vector/Vector3.h"
 
 class Matrix3
 {

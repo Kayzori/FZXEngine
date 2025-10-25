@@ -7,6 +7,7 @@
 class Object2D
 {
 private:
+    // Flags
     bool transformOwned;
 public:
     // Properties
@@ -28,6 +29,6 @@ public:
     }
 
     // Methods
-    virtual void update(double dt) = 0;
-    virtual void render() = 0;
+    virtual void update(double dt) {};
+    virtual void render() {};
 };
