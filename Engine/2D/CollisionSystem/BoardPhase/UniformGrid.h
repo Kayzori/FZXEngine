@@ -36,7 +36,7 @@ public:
     // n: number of objects
     // m: number of occupied cells
     // k: number of queried objects
-    // p: number of potential pairs
+    // p: number of potential pairs if a cell has 2 or more objects
                                                                                 // Time Complexity
     void clear();                                                               // Best O(1), Average O(1), Worst O(1)
     void addObject(Collision2D* obj);                                           // Best O(1), Average O(1), Worst O(n)

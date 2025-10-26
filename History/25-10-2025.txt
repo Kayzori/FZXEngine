@@ -1,0 +1,26 @@
+25/10/2025
+
+# Whats added/removed
+
+- Organizing project files with good names and folder sorting
+- Making Collision2D class
+- Making space partion data structure which is "Uniform Grid" using it to compute collision pairs
+on BoardPhase
+
+# Summary
+
+- Diving into collision system by making first basic Collision2D class and basic BoardPhase pairs
+detection with linear time complexity + adding an AABB2D checks to push perfects pairs for narrow phase
+
+# Details
+
+- for now the collision system has:
+    * m is number of occupied cells
+    * n is number of collision object
+    * p is number of potential pairs (p = (c * (c - 1)) / 2, c is number of collision objects in a cell)
+    . for each board update:
+        . Best O(m), Average O(m), Worst O(mn)
+    . for each pairs computations
+        . Best O(p), Average O(p), Worst O(pn)
+    . in total, for each frame (update + compute):
+        . Best O(m + p), Average O(m + p), Worst O((m + p) * n)

@@ -1,0 +1,30 @@
+24/10/2025
+
+# Whats Added/Removed
+
+- Math Library -
+- Adding vectors classes:
+    . Vector2
+    . Vector3
+    . Vector4
+    . Utils
+- Adding matrix classes:
+    . Matrix2
+    . Matrix3
+- Adding geometry classes:
+    . Transform2D
+    . AABB2D (Axis-Aligned-Bounding-Box)
+    . Ray2D
+- Adding Math Utils class
+- Objects -
+- Adding Object2D base class
+- Adding Shape2D base class with drived classes:
+    . Box2D
+    . Circle2D
+    . Polygon2D
+
+# Summary
+
+- Starting of the serious project "FZXEngine Physics Engine", making a starting math Library for the
+engine, being by build the 2D physics engine side and making a basic Object2D base class + Shape2D base
+classes for all existing shapes in the physics world
