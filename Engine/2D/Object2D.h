@@ -1,9 +1,5 @@
 #pragma once
 
-// Forward-declare GLFWwindow to avoid pulling in OpenGL headers from <GLFW/glfw3.h>
-// This prevents include-order problems where OpenGL headers get included
-// before glad. Translation units that need GLFW functions should include
-// <GLFW/glfw3.h> themselves (after including glad if they use OpenGL).
 struct GLFWwindow;
 
 #include "Math/Geometry2D/Core/Transform2D.h"
