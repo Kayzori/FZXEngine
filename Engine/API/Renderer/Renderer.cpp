@@ -7,8 +7,6 @@
 #include <limits>
 #include <algorithm>
 
-// Maximum number of vertices we allocate for the dynamic VBO. Draw calls
-// will chunk the vertexBatch into slices of this size if necessary.
 static const size_t RENDERER_MAX_VERTICES = 65536;
 
 // Constructors and Destructors
