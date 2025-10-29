@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../Algebra/Vector/Vector2.h"
-#include "../Algebra/Matrix/Matrix3.h"
+#include "../../Algebra/Vector/Vector2.h"
+#include "../../Algebra/Matrix/Matrix3.h"
 #include <vector>
 
 class Transform2D

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Algebra/Vector/Vector2.h"
+#include "../../Algebra/Vector/Vector2.h"
 #include <vector>
 
 // Axis-Aligned Bounding Box in 2D

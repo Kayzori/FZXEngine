@@ -4,9 +4,9 @@
 
 class Matrix2
 {
-private:
-    float m[2][2];
 public:
+    // Properties
+    float m[2][2];
 
     // Constructors
     Matrix2();
@@ -15,11 +15,6 @@ public:
     Matrix2(const float matrix[2][2]);
     Matrix2(const Matrix2& other);
     explicit Matrix2(const float diagonal);
-
-    // Methods
-    Matrix2 transposed() const;
-    Matrix2 inverted() const;
-    float determinant() const;
 
     // Arithmetic operators
     Matrix2 operator+(const Matrix2& other) const;
@@ -40,7 +35,7 @@ public:
     bool operator!=(const Matrix2& other) const;
 
     // Multiplications
-    Vector2 operator*(const Vector2& v) const;
+    Vector2 operator*(const Vector2& vector) const;
 
     // Indexing operator
     float operator[](const int index) const;

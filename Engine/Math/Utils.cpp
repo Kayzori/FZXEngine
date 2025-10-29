@@ -27,19 +27,14 @@ namespace Math {
     }
 }
 
-#ifdef MATH_TRIGONOMETRY_UTILS
+#ifdef MATH_INCLUDE_TRIGONOMETRY_UTILS
 
 namespace Math {
-
-    const double PI = 3.14159265358979323846;
-    const double PI_SQR = 9.86960440108935861883;
-    const double TWO_PI = 6.28318530717958647692;
-
-    float deg2rad(float degrees) {
+    float degToRad(float degrees) {
         return degrees * static_cast<float>(PI / 180.0);
     }
 
-    float rad2deg(float radians) {
+    float radToDeg(float radians) {
         return radians * static_cast<float>(180.0 / PI);
     }
 }

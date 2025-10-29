@@ -24,8 +24,8 @@ Matrix3::Matrix3(const float diagonal)
 }
 
 Matrix3::Matrix3(const float m00, const float m01, const float m02,
-           const float m10, const float m11, const float m12,
-           const float m20, const float m21, const float m22)
+                const float m10, const float m11, const float m12,
+                const float m20, const float m21, const float m22)
 {
     m[0][0] = m00; m[0][1] = m01; m[0][2] = m02;
     m[1][0] = m10; m[1][1] = m11; m[1][2] = m12;
@@ -44,48 +44,6 @@ Matrix3::Matrix3(const Matrix3& other)
     for (int i = 0; i < 3; i++)
         for (int j = 0; j < 3; j++)
             m[i][j] = other.m[i][j];
-}
-
-// Methods
-
-Matrix3 Matrix3::transposed() const
-{
-    Matrix3 result;
-    for (int i = 0; i < 3; i++)
-        for (int j = 0; j < 3; j++)
-            result.m[i][j] = m[j][i];
-    return result;
-}
-
-Matrix3 Matrix3::inverted() const
-{
-    Matrix3 result;
-    float det = determinant();
-    if (det == 0.0f)
-        return result; // Return zero matrix if not invertible
-
-    float invDet = 1.0f / det;
-
-    result.m[0][0] = (m[1][1] * m[2][2] - m[1][2] * m[2][1]) * invDet;
-    result.m[0][1] = (m[0][2] * m[2][1] - m[0][1] * m[2][2]) * invDet;
-    result.m[0][2] = (m[0][1] * m[1][2] - m[0][2] * m[1][1]) * invDet;
-
-    result.m[1][0] = (m[1][2] * m[2][0] - m[1][0] * m[2][2]) * invDet;
-    result.m[1][1] = (m[0][0] * m[2][2] - m[0][2] * m[2][0]) * invDet;
-    result.m[1][2] = (m[0][2] * m[1][0] - m[0][0] * m[1][2]) * invDet;
-
-    result.m[2][0] = (m[1][0] * m[2][1] - m[1][1] * m[2][0]) * invDet;
-    result.m[2][1] = (m[0][1] * m[2][0] - m[0][0] * m[2][1]) * invDet;
-    result.m[2][2] = (m[0][0] * m[1][1] - m[0][1] * m[1][0]) * invDet;
-
-    return result;
-}
-
-float Matrix3::determinant() const
-{
-    return m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) -
-           m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0]) +
-           m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
 }
 
 // Arithmetic operators

@@ -19,9 +19,9 @@ inline CellKey UniformGrid::getCellKey(const Vector2& pos) const {
 }
 
 void UniformGrid::addObject(Collision2D* obj) {
-    if (!obj || !obj->shape) return;
+    if (!obj) return;
 
-    const AABB2D aabb = AABB2D(obj->shape->getVertices());
+    const AABB2D aabb = AABB2D(obj->getVertices());
 
     int min_x = static_cast<int>(std::floor(aabb.min().x / cell_size));
     int min_y = static_cast<int>(std::floor(aabb.min().y / cell_size));
@@ -75,7 +75,7 @@ std::vector<std::pair<Collision2D*, Collision2D*>> UniformGrid::computePairs() c
         for (size_t i = 0; i < objs.size(); ++i) {
             for (size_t j = i + 1; j < objs.size(); ++j) {
                 // Collect potential collision pairs
-                if (AABB2D(objs[i]->shape->getVertices()).intersects(AABB2D(objs[j]->shape->getVertices())))
+                if (AABB2D(objs[i]->getVertices()).intersects(AABB2D(objs[j]->getVertices())))
                     pairs.emplace_back(objs[i], objs[j]);
             }
         }

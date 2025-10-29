@@ -1,8 +1,9 @@
 #include "Transform2D.h"
 
-#include <cmath>
+#define MATH_INCLUDE_TRIGONOMETRY_UTILS
+#include "../../Utils.h"
 
-#define PI 3.14159265358979323846
+#include <cmath>
 
 // Constructors
 
@@ -40,7 +41,7 @@ std::vector<Vector2> Transform2D::apply(const std::vector<Vector2>& points) cons
 }
 
 Vector2 Transform2D::apply(const Vector2& point) const {
-    float rad = rotation * (PI / 180.0f);
+    float rad = rotation * (Math::PI / 180.0f);
     float cosR = std::cos(rad);
     float sinR = std::sin(rad);
 
@@ -75,7 +76,7 @@ std::vector<Vector2> Transform2D::applyRotation(const std::vector<Vector2>& poin
 }
 
 Vector2 Transform2D::applyRotation(const Vector2& point) const {
-    float rad = rotation * (PI / 180.0f);
+    float rad = rotation * (Math::PI / 180.0f);
     float cosR = std::cos(rad);
     float sinR = std::sin(rad);
     return Vector2(
@@ -107,7 +108,7 @@ std::vector<Vector2> Transform2D::applyInverse(const std::vector<Vector2>& point
 }
 
 Vector2 Transform2D::applyInverse(const Vector2& point) const {
-    float rad = -rotation * (PI / 180.0f);
+    float rad = -rotation * (Math::PI / 180.0f);
     float cosR = std::cos(rad);
     float sinR = std::sin(rad);
 
@@ -120,7 +121,7 @@ Vector2 Transform2D::applyInverse(const Vector2& point) const {
 }
 
 Matrix3 Transform2D::matrix() const {
-    float rad = rotation * (PI / 180.0f);
+    float rad = rotation * (Math::PI / 180.0f);
     float cosR = std::cos(rad);
     float sinR = std::sin(rad);
 
@@ -135,7 +136,7 @@ void Transform2D::setMatrix(const Matrix3& matrix) {
     scale.x = std::sqrt(matrix[0] * matrix[0] + matrix[3] * matrix[3]);
     scale.y = std::sqrt(matrix[1] * matrix[1] + matrix[4] * matrix[4]);
 
-    rotation = std::atan2(matrix[3], matrix[0]) * (180.0f / PI);
+    rotation = std::atan2(matrix[3], matrix[0]) * (180.0f / Math::PI);
 
     position.x = matrix[6];
     position.y = matrix[7];

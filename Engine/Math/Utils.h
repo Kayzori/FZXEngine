@@ -18,12 +18,12 @@ namespace Math {
 
 namespace Math
 {
-    extern const double PI;
-    extern const double PI_SQR;
-    extern const double TWO_PI;
+    constexpr float PI = 3.14159265358979323846f;
+    constexpr float PI_SQR = 9.86960440108935861883f;
+    constexpr float TWO_PI = 6.28318530717958647692f;
 
-    inline float deg2rad(float degrees);
-    inline float rad2deg(float radians);
+    inline float degToRad(float degrees);
+    inline float radToDeg(float radians);
 }
 
 #endif

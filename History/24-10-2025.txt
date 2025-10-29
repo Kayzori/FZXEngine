@@ -2,21 +2,19 @@
 
 # Whats Added/Removed
 
-- Math Library -
-- Adding vectors classes:
-    . Vector2
-    . Vector3
-    . Vector4
-    . Utils
-- Adding matrix classes:
-    . Matrix2
-    . Matrix3
-- Adding geometry classes:
-    . Transform2D
-    . AABB2D (Axis-Aligned-Bounding-Box)
-    . Ray2D
-- Adding Math Utils class
-- Objects -
+- Making a Math library:
+    - Adding vectors classes:
+        . Vector2
+        . Vector3
+        . Vector4
+        . Utils
+    - Adding matrix classes:
+        . Matrix2
+        . Matrix3
+    - Adding geometry classes:
+        . Transform2D
+        . AABB2D (Axis-Aligned-Bounding-Box)
+    - Adding Math Utils class
 - Adding Object2D base class
 - Adding Shape2D base class with drived classes:
     . Box2D

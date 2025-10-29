@@ -2,7 +2,7 @@
 
 #include "../Collision2D.h"
 #include "Math/Algebra/Vector/Vector2.h"
-#include "Math/Geometry/AABB2D.h"
+#include "Math/Geometry2D/Core/AABB2D.h"
 
 #include <unordered_map>
 #include <vector>

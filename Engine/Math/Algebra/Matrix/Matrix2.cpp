@@ -23,7 +23,7 @@ Matrix2::Matrix2(const float diagonal)
 }
 
 Matrix2::Matrix2(const float m00, const float m01,
-                   const float m10, const float m11)
+                const float m10, const float m11)
 {
     m[0][0] = m00; m[0][1] = m01;
     m[1][0] = m10; m[1][1] = m11;
@@ -41,37 +41,6 @@ Matrix2::Matrix2(const Matrix2& other)
     for (int i = 0; i < 2; i++)
         for (int j = 0; j < 2; j++)
             m[i][j] = other.m[i][j];
-}
-
-// Methods
-
-Matrix2 Matrix2::transposed() const
-{
-    Matrix2 result;
-    for (int i = 0; i < 2; i++)
-        for (int j = 0; j < 2; j++)
-            result.m[i][j] = m[j][i];
-    return result;
-}
-
-Matrix2 Matrix2::inverted() const
-{
-    Matrix2 result;
-    float det = determinant();
-    if (det == 0.0f)
-        return result; // Return zero matrix if not invertible
-
-    float invDet = 1.0f / det;
-    result.m[0][0] =  m[1][1] * invDet;
-    result.m[0][1] = -m[0][1] * invDet;
-    result.m[1][0] = -m[1][0] * invDet;
-    result.m[1][1] =  m[0][0] * invDet;
-    return result;
-}
-
-float Matrix2::determinant() const
-{
-    return m[0][0] * m[1][1] - m[0][1] * m[1][0];
 }
 
 // Arithmetic operators
