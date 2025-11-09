@@ -27,6 +27,9 @@ namespace Math
 
         // Distance
         float distance(const Vector2& a, const Vector2& b);
+        float distance(const Vector3& a, const Vector3& b);
+
+        float distance2(const Vector2& a, const Vector2& b);
         float distance2(const Vector3& a, const Vector3& b);
 
         // Normalization

@@ -68,6 +68,14 @@ namespace Math
             return length(a - b);
         }
 
+        float distance(const Vector3& a, const Vector3& b) {
+            return length(a - b);
+        }
+
+        float distance2(const Vector2& a, const Vector2& b) {
+            return length2(a - b);
+        }
+
         float distance2(const Vector3& a, const Vector3& b) {
             return length2(a - b);
         }

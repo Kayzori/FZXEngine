@@ -1,4 +1,4 @@
-Architecture:
+Project Architecture:
 PhysicsEngine
 │
 ├── World
@@ -12,18 +12,18 @@ PhysicsEngine
 ├── Math Library
 │    ├── Vector2 / Vector3 / Vector4                             #####
 │    ├── Matrix2x2 / Matrix3x3 / Matrix4x4                       #####
-│    ├── Quaternion
-│    ├── Transform / AABB / Ray                                  #####
+│    ├── Quaternion                                              // SOON ON 3D...
+│    ├── Transform / AABB / Ray                                  ###
 │    └── Utility (dot, cross, normalize, etc.)                   #####
 │
 ├── Collision System
 │    ├── Broadphase                                              ###
-│    │    ├── AABB Tree / SAP / Grid / BVH
+│    │    ├── AABB Tree / SAP / Grid / BVH                       // [Uniform Grid]
 │    │    └── Detect possible colliding pairs
-│    ├── Narrowphase
-│    │    ├── SAT / GJK / EPA / Circle tests
+│    ├── Narrowphase                                             ###
+│    │    ├── SAT / GJK / EPA / Circle tests                     // [SAT, CircleCircle, CirclePolygon Brute Force]
 │    │    └── Generates ContactManifold
-│    └── Contact Solver
+│    └── Contact Solver                                          // TODO
 │         ├── Restitution, friction, impulses
 │         └── Constraint resolution
 │
@@ -52,5 +52,3 @@ PhysicsEngine
 
 Tasks:
  - Narrow Phase (Collision Detection Algorithm)
- - API (Renderer/UI)
- - PhysicsBodies

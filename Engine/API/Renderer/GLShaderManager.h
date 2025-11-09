@@ -8,13 +8,13 @@
 
 class GLShaderManager {
 public: 
-    static std::string LoadShaderSource(const std::string filepath);
+    static std::string loadShaderSource(const std::string filepath);
 
-    static GLuint CompileShader(GLenum shaderType, const std::string source);
+    static GLuint compileShader(GLenum shaderType, const std::string source);
 
-    static GLuint CreateShaderProgram(const std::string frag_source, const std::string vert_source, const std::string geom_source = "");
+    static GLuint createShaderProgram(const std::string frag_source, const std::string vert_source, const std::string geom_source = "");
 
-    static bool CheckShaderCompileStatus(GLuint shader);
+    static bool checkShaderCompileStatus(GLuint shader);
 
-    static bool CheckProgramLinkStatus(GLuint program);
+    static bool checkProgramLinkStatus(GLuint program);
 };

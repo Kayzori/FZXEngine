@@ -14,6 +14,10 @@ public:
     Vector4(float scalar);
     Vector4(const Vector4& other);
 
+    // Unary operators
+    Vector4 operator+() const;
+    Vector4 operator-() const;
+
     // Arethmetic operators
     Vector4 operator+(const Vector4& other) const;
     Vector4 operator-(const Vector4& other) const;

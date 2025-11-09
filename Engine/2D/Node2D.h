@@ -1,12 +1,11 @@
 #pragma once
 
-struct GLFWwindow;
+#include "../Node.h"
 
 #include "Math/Geometry2D/Core/Transform2D.h"
 
-// Base Class
-
-class Object2D
+// Base class for all 2D components/entities/systems
+class Node2D : public Node
 {
 private:
     // Flags
@@ -16,22 +15,23 @@ public:
     Transform2D* transform;
 
     // Constructors and Destructors
-    Object2D() :
+    Node2D() :
     transform(new Transform2D()),
     transformOwned(true)
     {}
 
-    Object2D(Transform2D* transform) :
+    Node2D(Transform2D* transform) :
     transform(new Transform2D()),
     transformOwned(true)
     {}
     
-    virtual ~Object2D() {
+    virtual ~Node2D() {
         if (transformOwned) delete transform;
     }
 
     // Methods
-    virtual void onUpdate(double delta_time) {};
-    // Use forward-declared GLFWwindow to avoid requiring GLFW in this header
-    virtual void onInputEvent(GLFWwindow* win, int key, int scan_code, int action, int mods) {};
+    virtual void setTransform(Transform2D* _transform) {
+        transformOwned = false;
+        transform = _transform;
+    }
 };

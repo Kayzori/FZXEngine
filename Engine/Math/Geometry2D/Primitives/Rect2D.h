@@ -16,13 +16,13 @@ public:
     {}
 
     Rect2D(const float width, const float height) :
-        size(size)
+        size(width, height)
     {}
 
     ~Rect2D() = default;
 
     // Methods
-    std::vector<Vector2> getVertices(const Vector2& origin = {0.0f, 0.0f}, const bool top_left = false) const {
+    std::vector<Vector2> getVertices(const bool top_left = false, const Vector2& origin = {0.0f, 0.0f}) const {
         if (top_left)
             return {
                 {origin.x, origin.y},

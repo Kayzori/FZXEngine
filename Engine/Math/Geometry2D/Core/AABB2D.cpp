@@ -8,8 +8,8 @@
 AABB2D::AABB2D() : x(0), y(0), w(0), h(0) {}
 
 AABB2D::AABB2D(const Vector2& position, const Vector2& size)
-    : x(static_cast<int>(position.x)), y(static_cast<int>(position.y)),
-      w(static_cast<int>(size.x)), h(static_cast<int>(size.y)) {}
+        : x(position.x), y(position.y),
+            w(size.x), h(size.y) {}
 
 
 AABB2D::AABB2D(const std::vector<Vector2>& points) {

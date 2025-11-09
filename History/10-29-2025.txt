@@ -13,8 +13,10 @@
 - Making the first renderer with batching support + 3 draw methods (verts, lines, filled)
 
 # Summary
+
 - Going deep into math library and making the first renderer for the engine for algorithm/sys
 visualization
 
 # Details
+
 - For now the renderer support only "Convex Polygons" cause of the simple triangulation algorithm O(n)

@@ -7,7 +7,7 @@ Circle2D::Circle2D(float radius):
     radius(radius)
 {}
 
-std::vector<Vector2> Circle2D::getVertices(const int segments, const Vector2& origin) const
+std::vector<Vector2> Circle2D::getVertices(const int segments, const bool top_left, const Vector2& origin) const
 {
     std::vector<Vector2> vertices;
     vertices.reserve(segments);
@@ -19,6 +19,10 @@ std::vector<Vector2> Circle2D::getVertices(const int segments, const Vector2& or
         float angle = i * angleIncrement;
         float x = radius * cosf(angle) + origin.x;
         float y = radius * sinf(angle) + origin.y;
+        if (top_left) {
+            x += radius;
+            y += radius;
+        }
         vertices.emplace_back(x, y);
     }
 

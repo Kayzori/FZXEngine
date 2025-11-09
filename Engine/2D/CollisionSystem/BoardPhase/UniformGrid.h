@@ -1,11 +1,13 @@
 #pragma once
 
-#include "../Collision2D.h"
 #include "Math/Algebra/Vector/Vector2.h"
 #include "Math/Geometry2D/Core/AABB2D.h"
 
 #include <unordered_map>
 #include <vector>
+
+// Forward declaration
+class Collision2D;
 
 //  UniformGrid
 //  Time complexity per update: O(m) where m is number of occupied cells

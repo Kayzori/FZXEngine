@@ -1,5 +1,7 @@
 #include "UniformGrid.h"
 
+#include "../Collision2D.h"
+
 // Constructor
 
 UniformGrid::UniformGrid(float cellSize)

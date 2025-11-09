@@ -11,15 +11,15 @@ static const size_t RENDERER_MAX_VERTICES = 65536;
 
 // Constructors and Destructors
 Renderer::Renderer(int width, int height) {
-    shaderProgram = GLShaderManager::CreateShaderProgram(fragmentShaderSrc, vertexShaderSrc);
+    shader_program = GLShaderManager::createShaderProgram(fragment_shader_src, vertex_shader_src);
 
     projection = Math::Algebra::ortho(0.0f, (float)width, (float)height, 0.0f, -1.0f, 1.0f);
 
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
+    glGenVertexArrays(1, &vao);
+    glGenBuffers(1, &vbo);
 
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)(RENDERER_MAX_VERTICES * sizeof(RenderVertex2D)), nullptr, GL_DYNAMIC_DRAW);
 
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, (GLsizei)sizeof(RenderVertex2D), (void*)offsetof(RenderVertex2D, position));
@@ -31,35 +31,35 @@ Renderer::Renderer(int width, int height) {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    vertexBatch.reserve(RENDERER_MAX_VERTICES);
+    vertex_batch.reserve(RENDERER_MAX_VERTICES);
 }
 
 Renderer::~Renderer() {
-    if (VBO) glDeleteBuffers(1, &VBO);
-    if (VAO) glDeleteVertexArrays(1, &VAO);
-    if (shaderProgram) {
+    if (vbo) glDeleteBuffers(1, &vbo);
+    if (vao) glDeleteVertexArrays(1, &vao);
+    if (shader_program) {
         glUseProgram(0);
-        glDeleteProgram(shaderProgram);
+        glDeleteProgram(shader_program);
     }
 
-    VBO = 0;
-    VAO = 0;
-    shaderProgram = 0;
+    vbo = 0;
+    vao = 0;
+    shader_program = 0;
 }
 
 // Methods
 
-void Renderer::DrawPolygon(const std::vector<Vector2>& verts, const Vector4& color) {
+void Renderer::drawPolygonArea(const std::vector<Vector2>& verts, const Vector4& color) {
     if (verts.size() < 3) return;
 
     for (size_t i = 1; i + 1 < verts.size(); i++) {
-        vertexBatch.push_back({ verts[0], color });
-        vertexBatch.push_back({ verts[i], color });
-        vertexBatch.push_back({ verts[i + 1], color });
+        vertex_batch.push_back({ verts[0], color });
+        vertex_batch.push_back({ verts[i], color });
+        vertex_batch.push_back({ verts[i + 1], color });
     }
 }
 
-void Renderer::DrawPolygonLines(const std::vector<Vector2>& verts, const Vector4& color, float thickness) {
+void Renderer::drawPolygonSegments(const std::vector<Vector2>& verts, const Vector4& color, float thickness) {
     if (verts.size() < 2 || thickness <= 0) return;
 
     // Draw each consecutive segment and close the loop (last -> first)
@@ -79,16 +79,16 @@ void Renderer::DrawPolygonLines(const std::vector<Vector2>& verts, const Vector4
         Vector2 v2 = p1 - normal;
         Vector2 v3 = p0 - normal;
 
-        vertexBatch.push_back({ v0, color });
-        vertexBatch.push_back({ v1, color });
-        vertexBatch.push_back({ v2, color });
-        vertexBatch.push_back({ v2, color });
-        vertexBatch.push_back({ v3, color });
-        vertexBatch.push_back({ v0, color });
+        vertex_batch.push_back({ v0, color });
+        vertex_batch.push_back({ v1, color });
+        vertex_batch.push_back({ v2, color });
+        vertex_batch.push_back({ v2, color });
+        vertex_batch.push_back({ v3, color });
+        vertex_batch.push_back({ v0, color });
     }
 }
 
-void Renderer::DrawPolygonVerts(const std::vector<Vector2>& verts, const Vector4& color, float size) {
+void Renderer::drawPolygonVertices(const std::vector<Vector2>& verts, const Vector4& color, float size) {
     if (size <= 0) return;
 
     float half = size / 2;
@@ -98,36 +98,36 @@ void Renderer::DrawPolygonVerts(const std::vector<Vector2>& verts, const Vector4
         Vector2 v2 = p + Vector2(half, half);
         Vector2 v3 = p + Vector2(-half, half);
 
-        vertexBatch.push_back({ v0, color });
-        vertexBatch.push_back({ v1, color });
-        vertexBatch.push_back({ v2, color });
-        vertexBatch.push_back({ v2, color });
-        vertexBatch.push_back({ v3, color });
-        vertexBatch.push_back({ v0, color });
+        vertex_batch.push_back({ v0, color });
+        vertex_batch.push_back({ v1, color });
+        vertex_batch.push_back({ v2, color });
+        vertex_batch.push_back({ v2, color });
+        vertex_batch.push_back({ v3, color });
+        vertex_batch.push_back({ v0, color });
     }
 }
 
-void Renderer::Render() {
-    glUseProgram(shaderProgram);
-    GLuint loc = glGetUniformLocation(shaderProgram, "uProjection");
+void Renderer::render() {
+    glUseProgram(shader_program);
+    GLuint loc = glGetUniformLocation(shader_program, "uProjection");
     if (loc != -1) {
         glUniformMatrix4fv(loc, 1, GL_TRUE, &projection.m[0][0]);
     }
 
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
     // Draw in chunks if the batch exceeds the GPU buffer capacity
-    size_t totalVerts = vertexBatch.size();
+    size_t totalVerts = vertex_batch.size();
     size_t offsetVerts = 0;
     while (offsetVerts < totalVerts) {
         size_t chunk = std::min(RENDERER_MAX_VERTICES, totalVerts - offsetVerts);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, (GLsizeiptr)(chunk * sizeof(RenderVertex2D)), vertexBatch.data() + offsetVerts);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, (GLsizeiptr)(chunk * sizeof(RenderVertex2D)), vertex_batch.data() + offsetVerts);
         glDrawArrays(GL_TRIANGLES, 0, (GLsizei)chunk);
         offsetVerts += chunk;
     }
 
-    vertexBatch.clear();
+    vertex_batch.clear();
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);

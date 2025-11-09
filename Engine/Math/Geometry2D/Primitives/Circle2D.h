@@ -15,5 +15,5 @@ public:
     ~Circle2D() = default;
 
     // Methods
-    std::vector<Vector2> getVertices(const int segments = 32, const Vector2& origin = {0.0f, 0.0f}) const;
+    std::vector<Vector2> getVertices(const int segments = 32, const bool top_left = false, const Vector2& origin = {0.0f, 0.0f}) const;
 };

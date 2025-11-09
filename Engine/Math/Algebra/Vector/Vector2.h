@@ -12,6 +12,10 @@ public:
     Vector2(float scalar);
     Vector2(const Vector2& other);
 
+    // Unary operators
+    Vector2 operator+() const;
+    Vector2 operator-() const;
+
     // Arithmetic operators
     Vector2 operator+(const Vector2& other) const;
     Vector2 operator-(const Vector2& other) const;

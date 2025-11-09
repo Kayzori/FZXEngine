@@ -26,22 +26,22 @@ public:
     ~Renderer();
 
     // Methods
-    void DrawPolygon(const std::vector<Vector2>& verts, const Vector4& color);
-    void DrawPolygonLines(const std::vector<Vector2>& verts, const Vector4& color, float thickness = 1.0f);
-    void DrawPolygonVerts(const std::vector<Vector2>& verts, const Vector4& color, float size = 1.0f);
-    void Render();
+    void drawPolygonArea(const std::vector<Vector2>& verts, const Vector4& color);
+    void drawPolygonSegments(const std::vector<Vector2>& verts, const Vector4& color, float thickness = 1.0f);
+    void drawPolygonVertices(const std::vector<Vector2>& verts, const Vector4& color, float size = 1.0f);
+    void render();
 
 private:
     // Properties
-    GLuint VAO = 0;
-    GLuint VBO = 0;
-    GLuint shaderProgram = 0;
+    GLuint vao = 0;
+    GLuint vbo = 0;
+    GLuint shader_program = 0;
 
     Matrix4 projection;
 
-    std::vector<RenderVertex2D> vertexBatch;
+    std::vector<RenderVertex2D> vertex_batch;
 
-    const char* vertexShaderSrc = R"(
+    const char* vertex_shader_src = R"(
         #version 330 core
         layout(location = 0) in vec2 aPos;
         layout(location = 1) in vec4 aColor;
@@ -56,7 +56,7 @@ private:
         }
     )";
 
-    const char* fragmentShaderSrc = R"(
+    const char* fragment_shader_src = R"(
         #version 330 core
         in vec4 fColor;
         out vec4 FragColor;

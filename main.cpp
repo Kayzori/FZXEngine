@@ -1,71 +1,69 @@
-#include "Engine/Engine.h"
+// Windowed entrypoint - runs Engine with a GLFW window and the Collision2DSystem
 #include <iostream>
+#include <vector>
 
-// Resize callback so the viewport matches the window
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-    glViewport(0, 0, width, height);
-}
+#include "Engine/Engine.h"
+#include "Engine/2D/CollisionSystem/Collision2DSystem.h"
+#include "Engine/2D/CollisionSystem/Collision2D.h"
+#include "Engine/Math/Geometry2D/Primitives/Circle2D.h"
+#include "Engine/Math/Geometry2D/Primitives/Rect2D.h"
 
 int main() {
-    // Initialize GLFW
-    if (!glfwInit()) {
-        std::cerr << "Failed to initialize GLFW\n";
+    // Create and init the engine (window + renderer)
+    Engine engine(1024, 768, "FZXEngine - Window");
+    if (!engine.init()) {
+        std::cerr << "Failed to initialize engine\n";
         return -1;
     }
 
-    // Request OpenGL 3.3 Core
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    // Create collision system and register it with the engine so its onUpdate is called
+    Collision2DSystem* colsys = new Collision2DSystem();
+    engine.addNode(colsys);
 
-    // Create a window
-    GLFWwindow* window = glfwCreateWindow(800, 600, "Clear Background", nullptr, nullptr);
-    if (!window) {
-        std::cerr << "Failed to create GLFW window\n";
-        glfwTerminate();
-        return -1;
+    // Create collision objects and register them with both the collision system (done in constructor)
+    // and with the engine so they will be rendered
+    std::vector<Collision2D*> objs;
+
+    for (int i = 0; i < 10; ++i) {
+        Circle2D circ(30.0f);
+        auto verts = circ.getVertices(16);
+        Collision2D* c = new Collision2D(colsys, verts, PrimitiveShape2D::CIRCLE2D);
+        c->transform->position = {100.0f + i * 40.0f, 300.0f};
+        engine.addNode(c);
+        objs.push_back(c);
     }
 
-    glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
-    // Load OpenGL function pointers
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        std::cerr << "Failed to initialize GLAD\n";
-        glfwDestroyWindow(window);
-        glfwTerminate();
-        return -1;
+    for (int i = 0; i < 10; ++i) {
+        Rect2D r({60.0f, 60.0f});
+        auto verts = r.getVertices(false, {0,0});
+        Collision2D* b = new Collision2D(colsys, verts, PrimitiveShape2D::CONVEX_POLYGON2D);
+        b->transform->position = {120.0f + i * 40.0f, 320.0f};
+        engine.addNode(b);
+        objs.push_back(b);
     }
 
-    // Inits ---------------------------
-    Renderer* renderer = new Renderer(800, 600);
-    Collision2D* col = new Collision2D((new Circle2D(200.0f))->getVertices(32));
-    col->transform->position = {400.0f, 300.0f};
+    // A couple of isolated shapes
+    Rect2D isoRect({50.0f, 50.0f});
+    auto isoVerts = isoRect.getVertices(false, {0,0});
+    Collision2D* iso = new Collision2D(colsys, isoVerts, PrimitiveShape2D::CONVEX_POLYGON2D);
+    iso->transform->position = {800.0f, 100.0f};
+    engine.addNode(iso);
+    objs.push_back(iso);
 
-    Collision2D* col2 = new Collision2D((new Circle2D(100.0f))->getVertices(16));
-    col2->transform->position = {100.0f, 100.0f};
+    Circle2D isoCirc(20.0f);
+    auto isoCV = isoCirc.getVertices(12);
+    Collision2D* iso2 = new Collision2D(colsys, isoCV, PrimitiveShape2D::CIRCLE2D);
+    iso2->transform->position = {900.0f, 500.0f};
+    engine.addNode(iso2);
+    objs.push_back(iso2);
 
-    Collision2D* col3 = new Collision2D((new Rect2D(50.0f))->getVertices());
-    col3->transform->position = {700.0f, 500.0f};
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    while (!glfwWindowShouldClose(window)) {
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        col->onRender(renderer);
-        col2->onRender(renderer);
-        col3->onRender(renderer);
-        renderer->Render();
-
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-    }
+    // Run the engine (this will call onUpdate/onRender for Collision2DSystem and Collision2D nodes)
+    engine.run();
 
     // Cleanup
-    glfwDestroyWindow(window);
-    glfwTerminate();
+    for (auto* o : objs) delete o;
+    delete colsys;
+
     return 0;
 }
+

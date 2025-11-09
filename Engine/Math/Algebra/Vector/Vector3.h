@@ -13,6 +13,10 @@ public:
     Vector3(float scalar);
     Vector3(const Vector3& other);
     
+    // Unary operators
+    Vector3 operator+() const;
+    Vector3 operator-() const;
+
     // Arithmetic operators
     Vector3 operator+(const Vector3& other) const;
     Vector3 operator-(const Vector3& other) const;

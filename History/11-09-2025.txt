@@ -1,0 +1,14 @@
+09/11/2025
+
+# Whats added/removed
+
+- Narrow Phase with so many CD algorithms:
+    - SAT collision detection
+    - Circle Circle collision detection
+    - Polygon Circle collision detection (Brute force all segments)
+- Collision system debug for tests
+
+# Summary
+
+- Going deep into collision detection and collision manifold infos
+- Collision system nearly done (contact solver is the only think missing for now)

@@ -14,6 +14,16 @@ Vector4::Vector4(const Vector4& other) : x(other.x), y(other.y), z(other.z), w(o
 
 // Arithmetic operators
 
+Vector4 Vector4::operator+() const
+{
+    return Vector4(+x, +y, +z, +w);
+}
+
+Vector4 Vector4::operator-() const
+{
+    return Vector4(-x, -y, -z, -w);
+}
+
 Vector4 Vector4::operator+(const Vector4& other) const
 {
     return Vector4(x + other.x, y + other.y, z + other.z, w + other.w);

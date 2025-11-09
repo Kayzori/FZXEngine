@@ -1,34 +1,49 @@
 #pragma once
 
-#include "../Object2D.h"
-#include "Math/Algebra/Vector/Vector2.h"
+#include "../Node2D.h"
+#include "Collision2DManifold.h"
+
+#include "Math/Geometry2D/Primitives/Primitives.h"
+
 #include "API/Renderer/Renderer.h"
 
 #include <vector>
 
-// Base Class
+// Forward declaration
+class Collision2DSystem;
 
-class Collision2D : public Object2D
+// Base collision class for 2d physics
+class Collision2D : public Node2D
 {
 private:
     // Properties
+    Collision2DSystem* sys;
     std::vector<Vector2> o_verts;
     Vector2 o_centroid;
+    float radius;
 
 public:
+    // Properties
+    PrimitiveShape2D p_shape;
+
     // Constructors and Destructors
-    Collision2D(std::vector<Vector2> verts);
-    Collision2D(Transform2D* transform, std::vector<Vector2> verts);
+    Collision2D(Collision2DSystem* col_sys, std::vector<Vector2> verts, PrimitiveShape2D p_shape = PrimitiveShape2D::CONVEX_POLYGON2D);
+    Collision2D( Transform2D* transform, Collision2DSystem* col_sys, std::vector<Vector2> verts, PrimitiveShape2D p_shape = PrimitiveShape2D::CONVEX_POLYGON2D);
 
-    Collision2D(Collision2D* other);
-    Collision2D(Transform2D* transform, Collision2D* other);
+    Collision2D(Collision2DSystem* col_sys, Collision2D* other);
+    Collision2D(Transform2D* transform, Collision2DSystem* col_sys, Collision2D* other);
 
-    ~Collision2D() = default;
+    ~Collision2D();
 
     // Methods
                                                     // Time Complexity
+    float getRadius() const;                        // Best O(1), Average O(1), Worst O(1) 
+    std::vector<Vector2> getOVertices() const;      // Best O(1), Average O(1), Worst O(1)
+    Vector2 getOCentroid() const;                   // Best O(1), Average O(1), Worst O(1)                                          
     std::vector<Vector2> getVertices() const;       // Best O(n), Average O(n), Worst O(n)
     Vector2 getCentroid() const;                    // Best O(1), Average O(1), Worst O(1)
 
-    void onRender(Renderer* renderer) const;
+    Collision2DSystem* getSys() const;          // Best O(1), Average O(1), Worst O(1)
+
+    void onRender(Renderer* renderer) override;     // Best O(n), Average O(n), Worst O(n)
 };
